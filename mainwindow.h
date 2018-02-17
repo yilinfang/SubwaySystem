@@ -40,6 +40,10 @@ private slots:
     // QWidget interface
 protected:
     void mouseMoveEvent(QMouseEvent *event);
+
+    // QWidget interface
+protected:
+    void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
 #endif // MAINWINDOW_H

@@ -29,10 +29,10 @@ void MainWindow::ShowStation(Station *station)
 
 void MainWindow::ShowTrack(Track *track)
 {
-    ui->displayLabel->clear();
-    QFont font("Microsoft YaHei", 10, 75);
-    ui->displayLabel->setFont(font);
-    ui->displayLabel->setText(track->s1->name + "---" + track->s2->name);
+    //ui->displayLabel->clear();
+    //QFont font("Microsoft YaHei", 10, 75);
+    //ui->displayLabel->setFont(font);
+    ui->statusBar->showMessage(track->s1->name + "---" + track->s2->name);
 }
 
 
@@ -129,8 +129,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             }
         }
     }
-    qDebug() << pos.x() << pos.y() << "移动";
+    qDebug() << pos.x() << pos.y() << "Hover";
 }
 
 
 
+
+
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    QPoint pos = event->pos();
+    qDebug() << pos.x() << pos.y() << "Double";
+}
