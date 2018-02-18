@@ -6,6 +6,20 @@
 #include "subwaystation.h"
 #include <QDebug>
 #include <QFont>
+#include <QColor>
+
+typedef struct Point Point;
+typedef struct DLine DLine;
+struct Point{
+    Station* station;
+    QColor color;
+};
+struct DLine
+{
+    Track* track;
+    QColor color;
+};
+
 namespace Ui {
 class MainWindow;
 }
@@ -23,27 +37,25 @@ private:
     QString fileName;
     SubwaySystem subwaySystem;
     Map map;
-    QList<Station> points2draw;
-    QList<Track> lines2draw;
-    QList<Station> drawedPoints;
-    QList<Track> drawedTracks;
+    QList<Point> points2draw;
+    QList<DLine> lines2draw;
+    QList<Point> drawedPoints;
+    QList<DLine> drawedTracks;
 
     void ShowStation(Station* station);
     void ShowTrack(Track* track);
+    Station* IsStationAround(QPoint pos);
+    Track* IsTrackAround(QPoint pos);
+    QList<Point> SetPointColor(QList<Station> &stations, QColor color);
+    QList<DLine> SetLineColor(QList<Track> &tracks, QColor color);
     // QWidget interface
 protected:
     void paintEvent(QPaintEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
 
 private slots:
     void on_pushButton_clicked();
-
-    // QWidget interface
-protected:
-    void mouseMoveEvent(QMouseEvent *event);
-
-    // QWidget interface
-protected:
-    void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
 #endif // MAINWINDOW_H

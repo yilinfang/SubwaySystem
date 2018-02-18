@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include "subwaystation.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -35,21 +37,93 @@ void MainWindow::ShowTrack(Track *track)
     ui->statusBar->showMessage(track->s1->name + "---" + track->s2->name);
 }
 
+Station *MainWindow::IsStationAround(QPoint pos)
+{
+    if(drawedPoints.isEmpty())
+        return NULL;
+    QList<Point>::iterator iter;
+    for(iter = drawedPoints.begin(); iter != drawedPoints.end(); iter++)
+    {
+        long dis = (iter->station->pos.x() - pos.x()) * (iter->station->pos.x() - pos.x()) + (iter->station->pos.y() - pos.y()) * (iter->station->pos.y() - pos.y());
+        if(dis <= 4)
+        {
+            return iter->station;
+        }
+    }
+    return NULL;
+}
+
+Track *MainWindow::IsTrackAround(QPoint pos)
+{
+    if(drawedTracks.isEmpty())
+        return NULL;
+    QList<DLine>::iterator iter;
+    for(iter = drawedTracks.begin(); iter != drawedTracks.end(); iter++)
+    {
+        if((pos.x() - iter->track->s1->pos.x()) * (iter->track->s2->pos.y() - iter->track->s1->pos.y()) == (iter->track->s1->pos.x() - iter->track->s2->pos.x()) * (pos.y() - iter->track->s1->pos.y())) //叉乘为0则三点共线
+        {
+            if((pos.x() - iter->track->s1->pos.x()) * (pos.x() - iter->track->s2->pos.x()) <= 0 && (pos.y() - iter->track->s1->pos.y()) * (pos.y() - iter->track->s2->pos.y()) <= 0) //如果pos在两点之间，则pos处在该条线段中
+            {
+                return iter->track;
+            }
+        }
+    }
+    return NULL;
+}
+
+QList<Point> MainWindow::SetPointColor(QList<Station> &stations, QColor color)
+{
+    QList<Point> list;
+    list.clear();
+    if(!stations.isEmpty())
+    {
+        QList<Station>::iterator iter;
+        for(iter = stations.begin(); iter != stations.end(); iter++)
+        {
+            Point point;
+            point.station = &(*iter);
+            point.color = color;
+            list.append(point);
+        }
+    }
+    return list;
+}
+
+QList<DLine> MainWindow::SetLineColor(QList<Track> &tracks, QColor color)
+{
+    QList<DLine> list;
+    list.clear();
+    if(!tracks.isEmpty())
+    {
+        QList<Track>::iterator iter;
+        for(iter = tracks.begin(); iter != tracks.end(); iter++)
+        {
+            DLine dLine;
+            dLine.track = &(*iter);
+            dLine.color = color;
+            list.append(dLine);
+        }
+    }
+    return list;
+}
+
 
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
+    //qDebug()<<"AAA";
     //    // 设置画笔颜色
     if(!points2draw.isEmpty())
     {
         drawedPoints.clear();
         drawedPoints.append(points2draw);
-        QList<Station>::iterator iter;
-        painter.setPen(QPen(Qt::red, 10, Qt::SolidLine, Qt::RoundCap));
+        QList<Point>::iterator iter;
         for(iter = points2draw.begin(); iter != points2draw.end(); iter++)
         {
-            painter.drawPoint(iter->pos.x(), iter->pos.y());
+            painter.setPen(QPen(iter->color, 10, Qt::SolidLine, Qt::RoundCap));
+            //qDebug() << iter->station->name;
+            painter.drawPoint(iter->station->pos.x(), iter->station->pos.y());
         }
     }
     if(!lines2draw.isEmpty())
@@ -57,11 +131,12 @@ void MainWindow::paintEvent(QPaintEvent *event)
         drawedTracks.clear();
         drawedTracks.append(lines2draw);
         painter.setPen(QPen(Qt::blue,5,Qt::SolidLine,Qt::RoundCap));
-        QList<Track>::iterator iter;
+        QList<DLine>::iterator iter;
         //qDebug() << lines2draw.size();
         for(iter = lines2draw.begin(); iter != lines2draw.end(); iter++)
         {
-            painter.drawLine(iter->s1->pos, iter->s2->pos);
+            painter.setPen(QPen(iter->color,5,Qt::SolidLine,Qt::RoundCap));
+            painter.drawLine(iter->track->s1->pos, iter->track->s2->pos);
             //painter.drawLine(iter->s1->pos.x(),iter->s1->pos.y(),iter->s2->pos.x(),iter->s2->pos.y());
             //qDebug() << iter->s1->pos.x() << iter->s1->pos.y() << iter->s2->pos.x() << iter->s2->pos.y();
         }
@@ -73,6 +148,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
         font.setFamily("Microsoft YaHei");
         font.setPointSize(50);
         font.setItalic(true);
+        painter.setPen(Qt::blue);
         painter.setFont(font);
 
         // 绘制文本
@@ -92,9 +168,11 @@ void MainWindow::on_pushButton_clicked()
     InitSubwaySystem(str, subwaySystem, outputBufa);
     ui->pushButton->setText(outputBufa);
     points2draw.clear();
-    points2draw.append(subwaySystem.stationTable);
+    //points2draw.append();
+    points2draw.append(SetPointColor(subwaySystem.stationTable, Qt::blue));
     lines2draw.clear();
-    lines2draw.append(subwaySystem.tracks);
+    lines2draw.append(SetLineColor(subwaySystem.tracks, Qt::red));
+    //lines2draw.append(subwaySystem.tracks);
     QWidget::update();
 }
 
@@ -103,30 +181,20 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     QPoint pos = event->pos();
     if(!drawedPoints.isEmpty())
     {
-        QList<Station>::iterator iter;
-        for(iter = drawedPoints.begin(); iter != drawedPoints.end(); iter++)
+        Station* ptr = IsStationAround(pos);
+        if(ptr)
         {
-            long dis = (iter->pos.x() - pos.x()) * (iter->pos.x() - pos.x()) + (iter->pos.y() - pos.y()) * (iter->pos.y() - pos.y());
-            if(dis <= 4)
-            {
-                ShowStation(&(*iter));
-                return;
-            }
+            ShowStation(ptr);
+            return;
         }
     }
     if(!drawedTracks.isEmpty())
     {
-        QList<Track>::iterator iter;
-        for(iter = drawedTracks.begin(); iter != drawedTracks.end(); iter++)
+        Track* ptr = IsTrackAround(pos);
+        if(ptr)
         {
-            if((pos.x() - iter->s1->pos.x()) * (iter->s2->pos.y() - iter->s1->pos.y()) == (iter->s1->pos.x() - iter->s2->pos.x()) * (pos.y() - iter->s1->pos.y())) //叉乘为0则三点共线
-            {
-                if((pos.x() - iter->s1->pos.x()) * (pos.x() - iter->s2->pos.x()) <= 0 && (pos.y() - iter->s1->pos.y()) * (pos.y() - iter->s2->pos.y()) <= 0) //如果pos在两点之间，则pos处在该条线段中
-                {
-                    ShowTrack(&(*iter));
-                    return;
-                }
-            }
+            ShowTrack(ptr);
+            return;
         }
     }
     qDebug() << pos.x() << pos.y() << "Hover";
