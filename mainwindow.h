@@ -41,6 +41,8 @@ private:
     QList<DLine> lines2draw;
     QList<Point> drawedPoints;
     QList<DLine> drawedTracks;
+    QList<Station*> chosenStations;
+    QList<Track*> chosenTracks;
 
     void ShowStation(Station* station);
     void ShowTrack(Track* track);
@@ -49,6 +51,8 @@ private:
     QList<Point> SetPointColor(QList<Station> &stations, QColor color);
     QList<DLine> SetLineColor(QList<Track> &tracks, QColor color);
     // QWidget interface
+    void ShowChosenStation();
+    void ShowChosenTracks();
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -56,6 +60,8 @@ protected:
 
 private slots:
     void on_pushButton_clicked();
+    void on_saveFile_clicked();
+    void on_loadFile_clicked();
 };
 
 #endif // MAINWINDOW_H

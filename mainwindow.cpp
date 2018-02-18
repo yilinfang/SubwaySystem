@@ -107,6 +107,29 @@ QList<DLine> MainWindow::SetLineColor(QList<Track> &tracks, QColor color)
     return list;
 }
 
+void MainWindow::ShowChosenStation()
+{
+    if(chosenStations.isEmpty())
+    {
+        ui->displayLabel2->setText("未选中任何站点!");
+    }
+    else{
+        QList<Station*>::iterator iter;
+        QString str;
+        for(iter = chosenStations.begin(); iter != chosenStations.end(); iter++)
+        {
+            str += (*iter)->name;
+            str += ' ';
+        }
+        ui->displayLabel2->setText(str);
+    }
+}
+
+void MainWindow::ShowChosenTracks()
+{
+    //ui->displayLabel3->setText(track->s1->name + "---" + track->s2->name);
+}
+
 
 void MainWindow::paintEvent(QPaintEvent *event)
 {
@@ -159,23 +182,23 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::on_pushButton_clicked()
 {
-    QString str = ui->lineEdit->text();
-    //temp = str;
-    fileName = "data.dat";
-    str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
-    qDebug() << str;
-    QString outputBufa;
-    InitSubwaySystem(str + fileName, subwaySystem, outputBufa);
-    ui->pushButton->setText(outputBufa);
-    fileName = "data.txt";
-    SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
-    points2draw.clear();
-    //points2draw.append();
-    points2draw.append(SetPointColor(subwaySystem.stationTable, Qt::blue));
-    lines2draw.clear();
-    lines2draw.append(SetLineColor(subwaySystem.tracks, Qt::red));
-    //lines2draw.append(subwaySystem.tracks);
-    QWidget::update();
+//    QString str = ui->lineEdit->text();
+//    //temp = str;
+//    fileName = "data.dat";
+//    str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
+//    qDebug() << str;
+//    QString outputBufa;
+//    InitSubwaySystem(str + fileName, subwaySystem, outputBufa);
+//    ui->pushButton->setText(outputBufa);
+//    fileName = "data.txt";
+//    SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
+//    points2draw.clear();
+//    //points2draw.append();
+//    points2draw.append(SetPointColor(subwaySystem.stationTable, Qt::blue));
+//    lines2draw.clear();
+//    lines2draw.append(SetLineColor(subwaySystem.tracks, Qt::red));
+//    //lines2draw.append(subwaySystem.tracks);
+//    QWidget::update();
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
@@ -210,4 +233,32 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QPoint pos = event->pos();
     qDebug() << pos.x() << pos.y() << "Double";
+    Station* ptr1 = IsStationAround(pos);
+    Track* ptr2 = IsTrackAround(pos);
+    if(ptr1)
+    {
+        chosenStations.append(ptr1);
+        ShowChosenStation();
+        return;
+    }
+    if(ptr2)
+    {
+        chosenTracks.append(ptr2);
+        ShowChosenTracks();
+        return;
+    }
+}
+
+void MainWindow::on_saveFile_clicked()
+{
+    string str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.txt";
+    string outputBufa;
+    SaveSubwaySystem(str, subwaySystem, outputBufa);
+}
+
+void MainWindow::on_loadFile_clicked()
+{
+    string str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
+    string outputBufa;
+    InitSubwaySystem(str, subwaySystem, outputBufa);
 }
