@@ -1,14 +1,13 @@
 #ifndef SUBWAYSTATION_H
 #define SUBWAYSTATION_H
 
-#include <QVector>
-#include <string>
-#include <QList>
-#include <QString>
-#include <QFile>
-#include <QTextStream>
-#include <QStringList>
-#include <QDebug>
+#include "QVector"
+#include "QList"
+#include "QString"
+#include "QFile"
+#include "QTextStream"
+#include "QStringList"
+#include "QDebug"
 
 #define INF 10000
 #define OK 1
@@ -77,4 +76,6 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
 Station* FindOrNewStation(QString stationName, Line* p2line,SubwaySystem &subwaySystem);
 Station* FindStationByName(QString stationName, SubwaySystem &subwaySystem);
 Track* FindOrNewTrack(Station* station1, Station* station2, int weight,Line* p2line, SubwaySystem &subwaySystem);
+state SaveSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &outputBufa);
+
 #endif // SUBWAYSTATION_H

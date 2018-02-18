@@ -40,6 +40,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
             if(!flag)
             {
                 outputBufa = "文件格式错误！";
+                file.close();
                 return ERROR;
             }
             ++iter;
@@ -48,6 +49,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
             if(!flag)
             {
                 outputBufa = "文件格式错误！";
+                file.close();
                 return ERROR;
             }
             ptr1->pos.setX(x);
@@ -57,6 +59,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
             if(!flag)
             {
                 outputBufa = "文件格式错误！";
+                file.close();
                 return ERROR;
             }
             qDebug() << weight;
@@ -69,6 +72,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
             if(!flag)
             {
                 outputBufa = "文件格式错误！";
+                file.close();
                 return ERROR;
             }
             qDebug() << x;
@@ -78,6 +82,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
             if(!flag)
             {
                 outputBufa = "文件格式错误！";
+                file.close();
                 return ERROR;
             }
             ptr2->pos.setX(x);
@@ -85,6 +90,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
             FindOrNewTrack(ptr1, ptr2, weight, p2line, subwaySystem);
         }
     }
+    file.close();
     return OK;
 }
 
@@ -156,4 +162,39 @@ Track* FindOrNewTrack(Station *station1, Station *station2, int weight, Line *p2
     station2->p2Tracks.append(ptr);
     p2line->p2inLineTracks.append(ptr);
     return ptr;
+}
+
+state SaveSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &outputBufa)
+{
+    QFile file(fileName);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        outputBufa = "文件打开失败!";
+        return ERROR;
+    }
+    QTextStream stream(&file);
+    if(subwaySystem.lineTable.isEmpty())
+    {
+        outputBufa = "地铁系统为空!";
+        file.close();
+        return OK;
+    }
+    QList<Line>::iterator l_iter;
+    for(l_iter = subwaySystem.lineTable.begin(); l_iter != subwaySystem.lineTable.end(); l_iter++)
+    {
+        stream << l_iter->name << endl;
+        qDebug() << l_iter->name << endl;
+        if(!l_iter->p2inLineTracks.isEmpty())
+        {
+            QList<Track*>::iterator t_iter;
+            for(t_iter = l_iter->p2inLineTracks.begin(); t_iter != l_iter->p2inLineTracks.end(); t_iter++)
+            {
+                stream << (*t_iter)->s1->name << "," << (*t_iter)->s1->pos.x() << "," << (*t_iter)->s1->pos.y() << "," << (*t_iter)->weight << "," << (*t_iter)->s2->name << "," << (*t_iter)->s2->pos.x() << "," << (*t_iter)->s2->pos.y() << endl;
+                qDebug() << (*t_iter)->s1->name << "," << (*t_iter)->s1->pos.x() << "," << (*t_iter)->s1->pos.y() << "," << (*t_iter)->weight << "," << (*t_iter)->s2->name << "," << (*t_iter)->s2->pos.x() << "," << (*t_iter)->s2->pos.y() << endl;
+            }
+        }
+    }
+    file.close();
+    outputBufa = "文件保存成功!";
+    return OK;
 }

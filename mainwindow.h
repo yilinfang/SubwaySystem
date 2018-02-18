@@ -1,12 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QPainter>
+#include "QMainWindow"
+#include "QPainter"
 #include "subwaystation.h"
-#include <QDebug>
-#include <QFont>
-#include <QColor>
+#include "QFont"
+#include "QColor"
+#include "QDebug"
 
 typedef struct Point Point;
 typedef struct DLine DLine;

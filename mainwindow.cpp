@@ -161,12 +161,14 @@ void MainWindow::on_pushButton_clicked()
 {
     QString str = ui->lineEdit->text();
     //temp = str;
-    fileName = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
-    str = fileName;
+    fileName = "data.dat";
+    str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
     qDebug() << str;
     QString outputBufa;
-    InitSubwaySystem(str, subwaySystem, outputBufa);
+    InitSubwaySystem(str + fileName, subwaySystem, outputBufa);
     ui->pushButton->setText(outputBufa);
+    fileName = "data.txt";
+    SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
     points2draw.clear();
     //points2draw.append();
     points2draw.append(SetPointColor(subwaySystem.stationTable, Qt::blue));
