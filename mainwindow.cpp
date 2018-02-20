@@ -251,14 +251,14 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 
 void MainWindow::on_saveFile_clicked()
 {
-    string str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.txt";
-    string outputBufa;
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.txt";
+    QString outputBufa;
     SaveSubwaySystem(str, subwaySystem, outputBufa);
 }
 
 void MainWindow::on_loadFile_clicked()
 {
-    string str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
-    string outputBufa;
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
+    QString outputBufa;
     InitSubwaySystem(str, subwaySystem, outputBufa);
 }
