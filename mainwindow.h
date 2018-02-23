@@ -10,14 +10,30 @@
 
 typedef struct Point Point;
 typedef struct DLine DLine;
+typedef struct PointList PointList;
+typedef struct DLineList DLineList;
+
 struct Point{
     Station* station;
     QColor color;
 };
+
 struct DLine
 {
     Track* track;
     QColor color;
+};
+
+struct PointList{
+    int size;
+    int length;
+    Point* arr;
+};
+
+struct DLineList{
+    int size;
+    int length;
+    DLine* arr;
 };
 
 namespace Ui {
@@ -63,5 +79,18 @@ private slots:
     void on_saveFile_clicked();
     void on_loadFile_clicked();
 };
+
+state PointListInit(PointList &pointList);
+state PointListAppend(PointList &pointList, Point point);
+state PointListAppendList(PointList &pointList1, PointList pointList2);
+state PointListEmpty(PointList &pointList);
+state PointListDestroy(PointList &pointList);
+
+state DLineListInit(DLineList &dLineList);
+state DLineListAppend(DLineList &dLineList, DLine dLine);
+state DLineListAppendList(DLineList &dLineList1, DLineList dLineList2);
+state DLineListEmpty(DLineList &dLineList);
+state DLineListDestroy(DLineList &dLineList);
+
 
 #endif // MAINWINDOW_H

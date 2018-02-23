@@ -262,3 +262,105 @@ void MainWindow::on_loadFile_clicked()
     QString outputBufa;
     InitSubwaySystem(str, subwaySystem, outputBufa);
 }
+
+state PointListInit(PointList &pointList)
+{
+    pointList.length = 0;
+    pointList.arr = (Point*)malloc(INITIALSIZE * sizeof(Point));
+    if(!pointList.arr)
+        return ERROR;
+    pointList.size = INITIALSIZE;
+    return OK;
+}
+
+state PointListAppend(PointList &pointList, Point point)
+{
+    if(pointList.length == pointList.size)
+    {
+        pointList.size += STEPSIZE;
+        pointList.arr = (Point*)realloc(pointList.arr, pointList.size * sizeof(Point));
+        if(!pointList.arr)
+        {
+            return ERROR;
+        }
+    }
+    pointList.arr[pointList.length] = point;
+    pointList.length++;
+    return OK;
+}
+
+state PointListAppendList(PointList &pointList1, PointList pointList2)
+{
+    for(int i = 0; i < pointList2.length; i++)
+    {
+        if(PointListAppend(pointList1, pointList2.arr[i]) == ERROR)
+        {
+            return ERROR;
+        }
+    }
+    return OK;
+}
+
+state PointListEmpty(PointList &pointList)
+{
+    pointList.length = 0;
+    return OK;
+}
+
+state PointListDestroy(PointList &pointList)
+{
+    pointList.size = pointList.length = 0;
+    free(pointList.arr);
+    return OK;
+}
+
+state DLineListInit(DLineList &dLineList)
+{
+    dLineList.length = 0;
+    dLineList.arr = (DLine*)malloc(INITIALSIZE * sizeof(DLine));
+    if(!dLineList.arr)
+        return ERROR;
+    dLineList.size = INITIALSIZE;
+    return OK;
+}
+
+state DLineListAppend(DLineList &dLineList, DLine dLine)
+{
+    if(dLineList.length == dLineList.size)
+    {
+        dLineList.size += STEPSIZE;
+        dLineList.arr = (DLine*)realloc(dLineList.arr, dLineList.size * sizeof(DLine));
+        if(!dLineList.arr)
+        {
+            return ERROR;
+        }
+    }
+    dLineList.arr[dLineList.length] = dLine;
+    dLineList.length++;
+    return OK;
+}
+
+state DLineListAppendList(DLineList &dLineList1, DLineList dLineList2)
+{
+    for(int i = 0; i < dLineList2.length; i++)
+    {
+        if(DLineListAppend(dLineList1, dLineList2.arr[i]) == ERROR)
+        {
+            return ERROR;
+        }
+    }
+    return OK;
+}
+
+state DLineListEmpty(DLineList &dLineList)
+{
+    dLineList.length = 0;
+    return OK;
+}
+
+state DLineListDestroy(DLineList &dLineList)
+{
+    dLineList.size = dLineList.length = 0;
+    free(dLineList.arr);
+    return OK;
+}
