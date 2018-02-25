@@ -12,14 +12,20 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
     QString line;
     Line tempLine;
     Line* p2line;
+//    LineListInit(subwaySystem.lineList);
+//    StationListInit(subwaySystem.stationList);
+//    TrackListInit(subwaySystem.trackList);
     while(!stream.atEnd())
     {
         line = stream.readLine();
         qDebug() << line;
         if(line.startsWith("#", Qt::CaseSensitive)) //读取到线路信息
         {
-            subwaySystem.lineTable.append(tempLine);
-            p2line = &subwaySystem.lineTable.last();
+            //subwaySystem.lineTable.append(tempLine);
+            qDebug() << subwaySystem.lineList.length << subwaySystem.lineList.size;
+            LineListAppend(subwaySystem.lineList, tempLine);
+            qDebug() << 1;
+            p2line = &subwaySystem.lineList.arr[subwaySystem.lineList.length - 1];
             p2line->name = line;
         }
         else    //读取到站点以及路径信息
@@ -102,18 +108,29 @@ Station* FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwa
     {
         Station temp;
         temp.name = stationName;
-        temp.p2transferLines.append(p2line);
-        subwaySystem.stationTable.append(temp);
-        ptr = &subwaySystem.stationTable.last();
-        p2line->p2inLineStations.append(ptr);
+        //temp.p2transferLines.append(p2line);
+        //P2LineListInit(temp.transferLines);
+        P2LineListAppend(temp.transferLines, p2line);
+        //subwaySystem.stationTable.append(temp);
+        StationListAppend(subwaySystem.stationList, temp);
+        ptr = &subwaySystem.stationList.arr[subwaySystem.stationList.length - 1];
+        P2StationListAppend(p2line->inLineStations, ptr);
     }
     else //该站点已经出现过
     {
-        QList<Line*>::iterator iter;
+        //QList<Line*>::iterator iter;
         int signal = 0;
-        for(iter = ptr->p2transferLines.begin(); iter != ptr->p2transferLines.end(); iter++)
+//        for(iter = ptr->p2transferLines.begin(); iter != ptr->p2transferLines.end(); iter++)
+//        {
+//            if(*iter == p2line)
+//            {
+//                signal = 1;
+//                break;
+//            }
+//        }
+        for(int i = 0; i < ptr->transferLines.length; i++)
         {
-            if(*iter == p2line)
+            if(ptr->transferLines.arr[i] == p2line)
             {
                 signal = 1;
                 break;
@@ -121,8 +138,10 @@ Station* FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwa
         }
         if(!signal) //该站点出现在一条新线路中
         {
-            ptr->p2transferLines.append(p2line);
-            p2line->p2inLineStations.append(ptr);
+            //ptr->p2transferLines.append(p2line);
+            P2LineListAppend(ptr->transferLines, p2line);
+            //p2line->p2inLineStations.append(ptr);
+            P2StationListAppend(p2line->inLineStations, ptr);
         }
     }
     return ptr;
@@ -130,37 +149,55 @@ Station* FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwa
 
 Station* FindStationByName(QString stationName, SubwaySystem &subwaySystem)
 {
-    QList<Station>::iterator iter;
-    for(iter = subwaySystem.stationTable.begin(); iter != subwaySystem.stationTable.end(); iter++)
+//    QList<Station>::iterator iter;
+//    for(iter = subwaySystem.stationTable.begin(); iter != subwaySystem.stationTable.end(); iter++)
+//    {
+//        if(iter->name == stationName)
+//            return &(*iter);
+//    }
+    for(int i = 0; i < subwaySystem.stationList.length; i++)
     {
-        if(iter->name == stationName)
-            return &(*iter);
+        if(subwaySystem.stationList.arr[i].name == stationName)
+            return &subwaySystem.stationList.arr[i];
     }
     return NULL;
 }
 
 Track* FindOrNewTrack(Station *station1, Station *station2, int weight, Line *p2line, SubwaySystem &subwaySystem)
 {
-    QList<Track>::iterator iter;
-    for(iter = subwaySystem.tracks.begin(); iter != subwaySystem.tracks.end(); iter++)
+//    QList<Track>::iterator iter;
+//    for(iter = subwaySystem.tracks.begin(); iter != subwaySystem.tracks.end(); iter++)
+//    {
+//        if((iter->s1 == station1 && iter->s2 == station2) || (iter->s1 == station2 && iter->s2 == station1))
+//        {
+//            iter->p2inTrakLines.append(p2line);
+//            return &(*iter);
+//        }
+//    }
+    for(int i = 0; i < subwaySystem.trackList.length - 1; i++)
     {
-        if((iter->s1 == station1 && iter->s2 == station2) || (iter->s1 == station2 && iter->s2 == station1))
+        if((subwaySystem.trackList.arr[i].s1 == station1 && subwaySystem.trackList.arr[i].s2 == station2) || (subwaySystem.trackList.arr[i].s1 == station2 && subwaySystem.trackList.arr[i].s2 == station1))
         {
-            iter->p2inTrakLines.append(p2line);
-            return &(*iter);
+            P2LineListAppend(subwaySystem.trackList.arr[i].LineList, p2line);
+            return &subwaySystem.trackList.arr[i];
         }
     }
     Track temp;
     temp.s1 = station1;
     temp.s2 = station2;
     temp.weight = weight;
-    temp.p2inTrakLines.append(p2line);
-    subwaySystem.tracks.append(temp);
-    Track* ptr = &subwaySystem.tracks.last();
+    //temp.p2inTrakLines.append(p2line);
+    P2LineListAppend(temp.LineList, p2line);
+//    subwaySystem.tracks.append(temp);
+    TrackListAppend(subwaySystem.trackList, temp);
+    Track* ptr = &subwaySystem.trackList.arr[subwaySystem.trackList.length - 1];
     //qDebug() << ptr->s1->pos.y() << ptr->s2->pos.y();
-    station1->p2Tracks.append(ptr);
-    station2->p2Tracks.append(ptr);
-    p2line->p2inLineTracks.append(ptr);
+//    station1->p2Tracks.append(ptr);
+    P2TrackListAppend(station1->trackList, ptr);
+//    station2->p2Tracks.append(ptr);
+    P2TrackListAppend(station2->trackList, ptr);
+//    p2line->p2inLineTracks.append(ptr);
+    P2TrackListAppend(p2line->inLineTrack, ptr);
     return ptr;
 }
 
@@ -173,24 +210,41 @@ state SaveSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
         return ERROR;
     }
     QTextStream stream(&file);
-    if(subwaySystem.lineTable.isEmpty())
+//    if(subwaySystem.lineTable.isEmpty())
+//    {
+//        outputBufa = "地铁系统为空!";
+//        file.close();
+//        return OK;
+//    }
+//    QList<Line>::iterator l_iter;
+//    for(l_iter = subwaySystem.lineTable.begin(); l_iter != subwaySystem.lineTable.end(); l_iter++)
+//    {
+//        stream << l_iter->name << endl;
+//        qDebug() << l_iter->name << endl;
+//        if(!l_iter->p2inLineTracks.isEmpty())
+//        {
+//            QList<Track*>::iterator t_iter;
+//            for(t_iter = l_iter->p2inLineTracks.begin(); t_iter != l_iter->p2inLineTracks.end(); t_iter++)
+//            {
+//                stream << (*t_iter)->s1->name << "," << (*t_iter)->s1->pos.x() << "," << (*t_iter)->s1->pos.y() << "," << (*t_iter)->weight << "," << (*t_iter)->s2->name << "," << (*t_iter)->s2->pos.x() << "," << (*t_iter)->s2->pos.y() << endl;
+//                qDebug() << (*t_iter)->s1->name << "," << (*t_iter)->s1->pos.x() << "," << (*t_iter)->s1->pos.y() << "," << (*t_iter)->weight << "," << (*t_iter)->s2->name << "," << (*t_iter)->s2->pos.x() << "," << (*t_iter)->s2->pos.y() << endl;
+//            }
+//        }
+//    }
+    if(subwaySystem.lineList.length == 0)
     {
         outputBufa = "地铁系统为空!";
         file.close();
         return OK;
     }
-    QList<Line>::iterator l_iter;
-    for(l_iter = subwaySystem.lineTable.begin(); l_iter != subwaySystem.lineTable.end(); l_iter++)
+    for(int i = 0; i < subwaySystem.lineList.length - 1; i++)
     {
-        stream << l_iter->name << endl;
-        qDebug() << l_iter->name << endl;
-        if(!l_iter->p2inLineTracks.isEmpty())
+        stream << subwaySystem.lineList.arr[i].name << endl;
+        if(subwaySystem.lineList.arr[i].inLineTrack.length != 0)
         {
-            QList<Track*>::iterator t_iter;
-            for(t_iter = l_iter->p2inLineTracks.begin(); t_iter != l_iter->p2inLineTracks.end(); t_iter++)
+            for(int j = 0; j < subwaySystem.lineList.arr[i].inLineTrack.length - 1; i++)
             {
-                stream << (*t_iter)->s1->name << "," << (*t_iter)->s1->pos.x() << "," << (*t_iter)->s1->pos.y() << "," << (*t_iter)->weight << "," << (*t_iter)->s2->name << "," << (*t_iter)->s2->pos.x() << "," << (*t_iter)->s2->pos.y() << endl;
-                qDebug() << (*t_iter)->s1->name << "," << (*t_iter)->s1->pos.x() << "," << (*t_iter)->s1->pos.y() << "," << (*t_iter)->weight << "," << (*t_iter)->s2->name << "," << (*t_iter)->s2->pos.x() << "," << (*t_iter)->s2->pos.y() << endl;
+                stream << subwaySystem.lineList.arr[i].inLineTrack.arr[j]->s1->name << "," << subwaySystem.lineList.arr[i].inLineTrack.arr[j]->s1->pos.x() << "," << subwaySystem.lineList.arr[i].inLineTrack.arr[j]->s1->pos.y() << "," << subwaySystem.lineList.arr[i].inLineTrack.arr[j]->weight << "," << subwaySystem.lineList.arr[i].inLineTrack.arr[j]->s2->name << "," << subwaySystem.lineList.arr[i].inLineTrack.arr[j]->s2->pos.x() << "," << subwaySystem.lineList.arr[i].inLineTrack.arr[j]->s2->pos.y() << endl;
             }
         }
     }
@@ -265,7 +319,10 @@ state LineListAppend(LineList &lineList, Line line)
     if(lineList.length == lineList.size)
     {
         lineList.size += STEPSIZE;
+        qDebug() << lineList.arr;
         lineList.arr = (Line*)realloc(lineList.arr, lineList.size * sizeof(Line));
+        //qDebug() << lineList.size;
+        //qDebug() << lineList.arr;
         if(!lineList.arr)
         {
             return ERROR;
@@ -273,6 +330,7 @@ state LineListAppend(LineList &lineList, Line line)
     }
     lineList.arr[lineList.length] = line;
     lineList.length++;
+    qDebug() << lineList.length;
     return OK;
 }
 

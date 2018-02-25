@@ -35,12 +35,36 @@ typedef struct P2LineList P2LineList;
 typedef struct P2StationList P2StationList;
 typedef struct P2TrackList P2TrackList;
 
+struct P2LineList{
+    int size;
+    int length;
+    Line** arr;
+    P2LineList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
+};
+
+struct P2TrackList{
+    int size;
+    int length;
+    Track** arr;
+    P2TrackList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
+};
+
 struct Station
 {
     QString name;
     QPoint pos;
     QList<Line*> p2transferLines;
+    P2LineList transferLines;
     QList<Track*> p2Tracks;
+    P2TrackList trackList;
 };
 
 struct StationList
@@ -48,6 +72,11 @@ struct StationList
     int size;
     int length;
     Station* arr;
+    StationList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
 };
 
 struct P2StationList
@@ -55,25 +84,32 @@ struct P2StationList
     int size;
     int length;
     Station** arr;
+    P2StationList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
 };
 
 struct Line{
     QString name;
-    QList<Station*> p2inLineStations;
-    QList<Track*> p2inLineTracks;
+    //QList<Station*> p2inLineStations;
+    P2StationList inLineStations;
+    //QList<Track*> p2inLineTracks;
+    P2TrackList inLineTrack;
 };
 
 struct LineList{
     int size;
     int length;
     Line* arr;
+    LineList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
 };
 
-struct P2LineList{
-    int size;
-    int length;
-    Line** arr;
-};
 
 
 
@@ -82,19 +118,20 @@ struct Track{
     Station *s1, *s2;
     int weight;
     QList<Line*> p2inTrakLines;
+    P2LineList LineList;
 };
 
 struct TrackList{
     int size;
     int length;
     Track* arr;
+    TrackList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
 };
 
-struct P2TrackList{
-    int size;
-    int length;
-    Track** arr;
-};
 
 struct SubwaySystem
 {
@@ -102,8 +139,11 @@ struct SubwaySystem
     int stationNum;
     int edgeNum;
     QList<Line> lineTable;
+    LineList lineList;
     QList<Station> stationTable;
+    StationList stationList;
     QList<Track> tracks;
+    TrackList trackList;
 };
 
 struct Edge
@@ -117,6 +157,11 @@ struct EdgeList
     int size;
     int length;
     Edge* arr;
+    EdgeList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
 };
 
 struct Map
@@ -155,7 +200,7 @@ state LineListEmpty(LineList &lineList);
 state LineListDestroy(LineList &lineList);
 
 state P2LineListInit (P2LineList  &p2LineList);
-state P2LineListAppend (P2LineList  &p2LineList, Line line);
+state P2LineListAppend (P2LineList  &p2LineList, Line* line);
 state P2LineListAppendList (P2LineList &p2LineList1, P2LineList p2LineList2);
 state P2LineListEmpty (P2LineList  &p2LineList);
 state P2LineListDestroy (P2LineList  &p2LineList);

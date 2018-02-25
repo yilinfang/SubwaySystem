@@ -28,12 +28,23 @@ struct PointList{
     int size;
     int length;
     Point* arr;
+    PointList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
 };
+
 
 struct DLineList{
     int size;
     int length;
     DLine* arr;
+    DLineList()
+    {
+        size = length = 0;
+        arr = NULL;
+    }
 };
 
 namespace Ui {
@@ -54,18 +65,26 @@ private:
     SubwaySystem subwaySystem;
     Map map;
     QList<Point> points2draw;
+    PointList points2Draw;
     QList<DLine> lines2draw;
-    QList<Point> drawedPoints;
-    QList<DLine> drawedTracks;
-    QList<Station*> chosenStations;
-    QList<Track*> chosenTracks;
-
+    DLineList lines2Draw;
+    //QList<Point> drawedPoints;
+    PointList drawedPoints;
+    //QList<DLine> drawedTracks;
+    //PointList drawedTracks;
+    DLineList drawedTracks;
+    //QList<Station*> chosenStations;
+    P2StationList chosenStations;
+    //QList<Track*> chosenTracks;
+    P2TrackList chosenTracks;
     void ShowStation(Station* station);
     void ShowTrack(Track* track);
     Station* IsStationAround(QPoint pos);
     Track* IsTrackAround(QPoint pos);
-    QList<Point> SetPointColor(QList<Station> &stations, QColor color);
-    QList<DLine> SetLineColor(QList<Track> &tracks, QColor color);
+    //QList<Point> SetPointColor(QList<Station> &stations, QColor color);
+    void SetPointColor(StationList &stations, QColor color, PointList &list);
+    //QList<DLine> SetLineColor(QList<Track> &tracks, QColor color);
+    void SetLineColor(TrackList &tracks, QColor color, DLineList &list);
     // QWidget interface
     void ShowChosenStation();
     void ShowChosenTracks();
