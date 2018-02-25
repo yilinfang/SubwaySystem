@@ -274,6 +274,7 @@ state StationListAppend(StationList &stationList, Station station)
             return ERROR;
         }
     }
+    qDebug() << stationList.length;
     stationList.arr[stationList.length] = station;
     stationList.length++;
     return OK;
@@ -314,13 +315,16 @@ state LineListInit(LineList &lineList)
     return OK;
 }
 
-state LineListAppend(LineList &lineList, Line line)
+state LineListAppend(LineList &lineList, Line &line)
 {
+    qDebug() << line.name;
     if(lineList.length == lineList.size)
     {
         lineList.size += STEPSIZE;
         qDebug() << lineList.arr;
-        lineList.arr = (Line*)realloc(lineList.arr, lineList.size * sizeof(Line));
+        //lineList.arr = (Line*)realloc(lineList.arr, lineList.size * sizeof(Line));
+        lineList.arr = new Line[lineList.size];
+        qDebug() << lineList.arr;
         //qDebug() << lineList.size;
         //qDebug() << lineList.arr;
         if(!lineList.arr)
@@ -328,7 +332,23 @@ state LineListAppend(LineList &lineList, Line line)
             return ERROR;
         }
     }
-    lineList.arr[lineList.length] = line;
+    QString test;
+    int * a;
+    a = (int*) malloc(10 * sizeof(int));
+    a[2] = 5;
+    qDebug() << a[2];
+    int b[10];
+    qDebug() << sizeof(b);
+    //qDebug() << sizeof(test);
+    //test = "a";
+    //qDebug() << sizeof(test);
+    //test = "abcd";
+    //qDebug() << sizeof(test);
+    //qDebug() << sizeof(QString);
+    qDebug() << lineList.size;
+    qDebug() << sizeof(Line);
+    qDebug() << sizeof(lineList.arr);
+    qDebug() << lineList.arr->name;
     lineList.length++;
     qDebug() << lineList.length;
     return OK;

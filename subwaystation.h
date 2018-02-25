@@ -8,8 +8,9 @@
 #include "QTextStream"
 #include "QStringList"
 #include "QDebug"
-#include "stdlib.h"
-#include "malloc/malloc.h"
+//#include "stdio.h"
+//#include "stdlib.h"
+//#include "malloc/malloc.h"
 
 #define INF 10000
 #define OK 1
@@ -194,7 +195,7 @@ state P2StationListEmpty(P2StationList &P2StationList);
 state P2StationListDestroy(P2StationList &P2StationList);
 
 state LineListInit(LineList &lineList);
-state LineListAppend(LineList &lineList, Line line);
+state LineListAppend(LineList &lineList, Line &line);
 state LineListAppendList(LineList &lineList1, LineList lineList2);
 state LineListEmpty(LineList &lineList);
 state LineListDestroy(LineList &lineList);
