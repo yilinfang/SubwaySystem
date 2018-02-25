@@ -9,9 +9,11 @@
 #include "QDebug"
 
 typedef struct Point Point;
+typedef struct PointNode PointNode;
 typedef struct DLine DLine;
-typedef struct PointList PointList;
-typedef struct DLineList DLineList;
+typedef struct DLineNode DLineNode;
+typedef PointNode*  PointList;
+typedef DLineNode* DLineList;
 
 struct Point{
     Station* station;
@@ -24,27 +26,37 @@ struct DLine
     QColor color;
 };
 
-struct PointList{
-    int size;
-    int length;
-    Point* arr;
-    PointList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
+//struct PointList{
+//    int size;
+//    int length;
+//    Point* arr;
+//    PointList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
+struct PointNode
+{
+    Point point;
+    PointNode* next;
 };
 
+//struct DLineList{
+//    int size;
+//    int length;
+//    DLine* arr;
+//    DLineList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
 
-struct DLineList{
-    int size;
-    int length;
-    DLine* arr;
-    DLineList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
+struct DLineNode
+{
+    DLine dLine;
+    DLineNode* next;
 };
 
 namespace Ui {

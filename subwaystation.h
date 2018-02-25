@@ -23,74 +23,115 @@ using namespace std;
 
 typedef int state;
 typedef struct Station Station;
+typedef struct StationNode StationNode;
+typedef struct P2StationNode P2StationNode;
 typedef struct Line Line;
+typedef struct LineNode LineNode;
+typedef struct P2LineNode P2LineNode;
 typedef struct Track Track;
+typedef struct TrackNode TrackNode;
+typedef struct P2TrackNode P2TrackNode;
 typedef struct Edge Edge;
 typedef struct SubwaySystem SubwaySystem;
 typedef struct Map Map;
-typedef struct StationList StationList;
-typedef struct TrackList TrackList;
-typedef struct LineList LineList;
+typedef StationNode* StationList;
+typedef P2StationNode* P2StationList;
+typedef TrackNode* TrackList;
+typedef P2TrackNode* P2TrackList;
+typedef LineNode* LineList;
+typedef P2LineNode* P2LineList;
 typedef struct EdgeList EdgeList;
-typedef struct P2LineList P2LineList;
-typedef struct P2StationList P2StationList;
-typedef struct P2TrackList P2TrackList;
 
-struct P2LineList{
-    int size;
-    int length;
-    Line** arr;
-    P2LineList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
+//struct P2LineList{
+//    int size;
+//    int length;
+//    Line** arr;
+//    P2LineList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
+
+struct StationNode
+{
+    Station station;
+    StationNode* next;
 };
 
-struct P2TrackList{
-    int size;
-    int length;
-    Track** arr;
-    P2TrackList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
+struct P2StationNode
+{
+    Station* p2Station;
+    P2StationNode* next;
+};
+
+struct TrackNode
+{
+    Track track;
+    TrackNode* next;
+};
+
+struct P2TrackNode
+{
+    Track* p2Track;
+    P2TrackNode* next;
+};
+//struct P2TrackList{
+//    int size;
+//    int length;
+//    Track** arr;
+//    P2TrackList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
+
+struct LineNode
+{
+    Line line;
+    LineNode* next;
+};
+
+struct P2LineNode
+{
+    Line* p2Line;
+    P2LineNode* next;
 };
 
 struct Station
 {
     QString name;
     QPoint pos;
-    QList<Line*> p2transferLines;
+    //QList<Line*> p2transferLines;
     P2LineList transferLines;
-    QList<Track*> p2Tracks;
+    //QList<Track*> p2Tracks;
     P2TrackList trackList;
 };
 
-struct StationList
-{
-    int size;
-    int length;
-    Station* arr;
-    StationList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
-};
+//struct StationList
+//{
+//    int size;
+//    int length;
+//    Station* arr;
+//    StationList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
 
-struct P2StationList
-{
-    int size;
-    int length;
-    Station** arr;
-    P2StationList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
-};
+//struct P2StationList
+//{
+//    int size;
+//    int length;
+//    Station** arr;
+//    P2StationList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
 
 struct Line{
     QString name;
@@ -100,16 +141,16 @@ struct Line{
     P2TrackList inLineTrack;
 };
 
-struct LineList{
-    int size;
-    int length;
-    Line* arr;
-    LineList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
-};
+//struct LineList{
+//    int size;
+//    int length;
+//    Line* arr;
+//    LineList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
 
 
 
@@ -118,20 +159,20 @@ struct Track{
     //long i,j;
     Station *s1, *s2;
     int weight;
-    QList<Line*> p2inTrakLines;
+    //QList<Line*> p2inTrakLines;
     P2LineList LineList;
 };
 
-struct TrackList{
-    int size;
-    int length;
-    Track* arr;
-    TrackList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
-};
+//struct TrackList{
+//    int size;
+//    int length;
+//    Track* arr;
+//    TrackList()
+//    {
+//        size = length = 0;
+//        arr = NULL;
+//    }
+//};
 
 
 struct SubwaySystem
@@ -139,11 +180,11 @@ struct SubwaySystem
     int lineNum;
     int stationNum;
     int edgeNum;
-    QList<Line> lineTable;
+    //QList<Line> lineTable;
     LineList lineList;
-    QList<Station> stationTable;
+    //QList<Station> stationTable;
     StationList stationList;
-    QList<Track> tracks;
+    //QList<Track> tracks;
     TrackList trackList;
 };
 

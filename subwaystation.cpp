@@ -255,179 +255,233 @@ state SaveSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
 
 state StationListInit(StationList &stationList)
 {
-    stationList.length = 0;
-    stationList.arr = (Station*)malloc(INITIALSIZE * sizeof(Station));
-    if(!stationList.arr)
-        return ERROR;
-    stationList.size = INITIALSIZE;
+    if(stationList)
+    {
+        StationListEmpty(stationList);
+    }
     return OK;
 }
 
 state StationListAppend(StationList &stationList, Station station)
 {
-    if(stationList.length == stationList.size)
+    if(!stationList)
     {
-        stationList.size += STEPSIZE;
-        stationList.arr = (Station*)realloc(stationList.arr, stationList.size * sizeof(Station));
-        if(!stationList.arr)
+        StationNode* p = (StationNode*)malloc(sizeof(StationNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->station = station;
+        p->next = NULL;
+        stationList = p;
+        return OK;
     }
-    qDebug() << stationList.length;
-    stationList.arr[stationList.length] = station;
-    stationList.length++;
-    return OK;
+    else{
+        StationNode* p = stationList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        StationNode* q = (StationNode*)malloc(sizeof(StationNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->station = station;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state StationListAppendList(StationList &stationList1, StationList stationList2)
 {
-    for(int i = 0; i < stationList2.length; i++)
+    if(!stationList1)
     {
-        if(StationListAppend(stationList1, stationList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        stationList1 = stationList2;
+        return OK;
     }
-    return OK;
+    else{
+        StationNode* p = stationList2;
+        while(p)
+        {
+            StationListAppend(stationList1, p->station);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state StationListEmpty(StationList &stationList)
 {
-    stationList.length = 0;
+    StationNode* p = stationList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state StationListDestroy(StationList &stationList)
 {
-    stationList.size = stationList.length = 0;
-    free(stationList.arr);
-    return OK;
+    return StationListEmpty(stationList);
 }
 
 state LineListInit(LineList &lineList)
 {
-    lineList.length = 0;
-    lineList.arr = (Line*)malloc(INITIALSIZE * sizeof(Line));
-    if(!lineList.arr)
-        return ERROR;
-    lineList.size = INITIALSIZE;
+    if(lineList)
+    {
+        LineListEmpty(lineList);
+    }
     return OK;
 }
 
-state LineListAppend(LineList &lineList, Line &line)
+state LineListAppend(LineList &lineList, Line line)
 {
-    qDebug() << line.name;
-    if(lineList.length == lineList.size)
+    if(!lineList)
     {
-        lineList.size += STEPSIZE;
-        qDebug() << lineList.arr;
-        //lineList.arr = (Line*)realloc(lineList.arr, lineList.size * sizeof(Line));
-        lineList.arr = new Line[lineList.size];
-        qDebug() << lineList.arr;
-        //qDebug() << lineList.size;
-        //qDebug() << lineList.arr;
-        if(!lineList.arr)
+        LineNode* p = (LineNode*)malloc(sizeof(LineNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->line = line;
+        p->next = NULL;
+        lineList = p;
+        return OK;
     }
-    QString test;
-    int * a;
-    a = (int*) malloc(10 * sizeof(int));
-    a[2] = 5;
-    qDebug() << a[2];
-    int b[10];
-    qDebug() << sizeof(b);
-    //qDebug() << sizeof(test);
-    //test = "a";
-    //qDebug() << sizeof(test);
-    //test = "abcd";
-    //qDebug() << sizeof(test);
-    //qDebug() << sizeof(QString);
-    qDebug() << lineList.size;
-    qDebug() << sizeof(Line);
-    qDebug() << sizeof(lineList.arr);
-    qDebug() << lineList.arr->name;
-    lineList.length++;
-    qDebug() << lineList.length;
-    return OK;
+    else{
+        LineNode* p = lineList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        LineNode* q = (LineNode*)malloc(sizeof(LineNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->line = line;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state LineListAppendList(LineList &lineList1, LineList lineList2)
 {
-    for(int i = 0; i < lineList2.length; i++)
+    if(!lineList1)
     {
-        if(LineListAppend(lineList1, lineList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        lineList1 = lineList2;
+        return OK;
     }
-    return OK;
+    else{
+        LineNode* p = lineList2;
+        while(p)
+        {
+            LineListAppend(lineList1, p->line);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state LineListEmpty(LineList &lineList)
 {
-    lineList.length = 0;
+    LineNode* p = lineList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state LineListDestroy(LineList &lineList)
 {
-    lineList.size = lineList.length = 0;
-    free(lineList.arr);
-    return OK;
+    return LineListEmpty(lineList);
 }
 
 state TrackListInit(TrackList &trackList)
 {
-    trackList.length = 0;
-    trackList.arr = (Track*)malloc(INITIALSIZE * sizeof(Track));
-    if(!trackList.arr)
-        return ERROR;
-    trackList.size = INITIALSIZE;
+    if(trackList)
+    {
+        TrackListEmpty(trackList);
+    }
     return OK;
 }
 
 state TrackListAppend(TrackList &trackList, Track track)
 {
-    if(trackList.length == trackList.size)
+    if(!trackList)
     {
-        trackList.size += STEPSIZE;
-        trackList.arr = (Track*)realloc(trackList.arr, trackList.size * sizeof(Track));
-        if(!trackList.arr)
+        TrackNode* p = (TrackNode*)malloc(sizeof(TrackNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->track = track;
+        p->next = NULL;
+        trackList = p;
+        return OK;
     }
-    trackList.arr[trackList.length] = track;
-    trackList.length++;
-    return OK;
+    else{
+        TrackNode* p = trackList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        TrackNode* q = (TrackNode*)malloc(sizeof(TrackNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->track = track;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state TrackListAppendList(TrackList &trackList1, TrackList trackList2)
 {
-    for(int i = 0; i < trackList2.length; i++)
+    if(!trackList1)
     {
-        if(TrackListAppend(trackList1, trackList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        trackList1 = trackList2;
+        return OK;
     }
-    return OK;
+    else{
+        TrackNode* p = trackList2;
+        while(p)
+        {
+            TrackListAppend(trackList1, p->track);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state TrackListEmpty(TrackList &trackList)
 {
-    trackList.length = 0;
+    TrackNode* p = trackList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state TrackListDestroy(TrackList &trackList)
 {
-    trackList.size = trackList.length = 0;
-    free(trackList.arr);
-    return OK;
+    return TrackListEmpty(trackList);
 }
 
 state EdgeListInit(EdgeList &edgeList)
@@ -483,104 +537,156 @@ state EdgeListDestroy(EdgeList &edgeList)
 
 state P2StationListInit(P2StationList &p2StationList)
 {
-    p2StationList.length = 0;
-    p2StationList.arr = (Station**)malloc(INITIALSIZE * sizeof(Station*));
-    if(!p2StationList.arr)
-        return ERROR;
-    p2StationList.size = INITIALSIZE;
+    if(p2StationList)
+    {
+        P2StationListEmpty(p2StationList);
+    }
     return OK;
 }
 
 state P2StationListAppend(P2StationList &p2StationList, Station* p2Station)
 {
-    if(p2StationList.length == p2StationList.size)
+    if(!p2StationList)
     {
-        p2StationList.size += STEPSIZE;
-        p2StationList.arr = (Station**)realloc(p2StationList.arr, p2StationList.size * sizeof(Station*));
-        if(!p2StationList.arr)
+        P2StationNode* p = (P2StationNode*)malloc(sizeof(P2StationNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->p2Station = p2Station;
+        p->next = NULL;
+        p2StationList = p;
+        return OK;
     }
-    p2StationList.arr[p2StationList.length] = p2Station;
-    p2StationList.length++;
-    return OK;
+    else{
+        P2StationNode* p = p2StationList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        P2StationNode* q = (P2StationNode*)malloc(sizeof(P2StationNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->p2Station = p2Station;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state P2StationListAppendList(P2StationList &p2StationList1, P2StationList p2StationList2)
 {
-    for(int i = 0; i < p2StationList2.length; i++)
+    if(!p2StationList1)
     {
-        if(P2StationListAppend(p2StationList1, p2StationList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        p2StationList1 = p2StationList2;
+        return OK;
     }
-    return OK;
+    else{
+        P2StationNode* p = p2StationList2;
+        while(p)
+        {
+            P2StationListAppend(p2StationList1, p->p2Station);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state P2StationListEmpty(P2StationList &p2StationList)
 {
-    p2StationList.length = 0;
+    P2StationNode* p = p2StationList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state P2StationListDestroy(P2StationList &p2StationList)
 {
-    p2StationList.size = p2StationList.length = 0;
-    free(p2StationList.arr);
-    return OK;
+    return P2StationListEmpty(p2StationList);
 }
 
 state P2LineListInit(P2LineList &p2LineList)
 {
-    p2LineList.length = 0;
-    p2LineList.arr = (Line**)malloc(INITIALSIZE * sizeof(Line*));
-    if(!p2LineList.arr)
-        return ERROR;
-    p2LineList.size = INITIALSIZE;
+    if(p2LineList)
+    {
+        P2LineListEmpty(p2LineList);
+    }
     return OK;
 }
 
 state P2LineListAppend(P2LineList &p2LineList, Line* p2Line)
 {
-    if(p2LineList.length == p2LineList.size)
+    if(!p2LineList)
     {
-        p2LineList.size += STEPSIZE;
-        p2LineList.arr = (Line**)realloc(p2LineList.arr, p2LineList.size * sizeof(Line*));
-        if(!p2LineList.arr)
+        P2LineNode* p = (P2LineNode*)malloc(sizeof(P2LineNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->p2Line = p2Line;
+        p->next = NULL;
+        p2LineList = p;
+        return OK;
     }
-    p2LineList.arr[p2LineList.length] = p2Line;
-    p2LineList.length++;
-    return OK;
+    else{
+        P2LineNode* p = p2LineList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        P2LineNode* q = (P2LineNode*)malloc(sizeof(P2LineNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->p2Line = p2Line;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state P2LineListAppendList(P2LineList &p2LineList1, P2LineList p2LineList2)
 {
-    for(int i = 0; i < p2LineList2.length; i++)
+    if(!p2LineList1)
     {
-        if(P2LineListAppend(p2LineList1, p2LineList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        p2LineList1 = p2LineList2;
+        return OK;
     }
-    return OK;
+    else{
+        P2LineNode* p = p2LineList2;
+        while(p)
+        {
+            P2LineListAppend(p2LineList1, p->p2Line);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state P2LineListEmpty(P2LineList &p2LineList)
 {
-    p2LineList.length = 0;
+    P2LineNode* p = p2LineList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state P2LineListDestroy(P2LineList &p2LineList)
 {
-    p2LineList.size = p2LineList.length = 0;
-    free(p2LineList.arr);
-    return OK;
+    return P2LineListEmpty(p2LineList);
 }
 
 state P2TrackListInit(P2TrackList &p2TrackList)
@@ -593,43 +699,79 @@ state P2TrackListInit(P2TrackList &p2TrackList)
     return OK;
 }
 
+state P2TrackListInit(P2TrackList &p2TrackList)
+{
+    if(p2TrackList)
+    {
+        P2TrackListEmpty(p2TrackList);
+    }
+    return OK;
+}
+
 state P2TrackListAppend(P2TrackList &p2TrackList, Track* p2Track)
 {
-    if(p2TrackList.length == p2TrackList.size)
+    if(!p2TrackList)
     {
-        p2TrackList.size += STEPSIZE;
-        p2TrackList.arr = (Track**)realloc(p2TrackList.arr, p2TrackList.size * sizeof(Track*));
-        if(!p2TrackList.arr)
+        P2TrackNode* p = (P2TrackNode*)malloc(sizeof(P2TrackNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->p2Track = p2Track;
+        p->next = NULL;
+        p2TrackList = p;
+        return OK;
     }
-    p2TrackList.arr[p2TrackList.length] = p2Track;
-    p2TrackList.length++;
-    return OK;
+    else{
+        P2TrackNode* p = p2TrackList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        P2TrackNode* q = (P2TrackNode*)malloc(sizeof(P2TrackNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->p2Track = p2Track;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state P2TrackListAppendList(P2TrackList &p2TrackList1, P2TrackList p2TrackList2)
 {
-    for(int i = 0; i < p2TrackList2.length; i++)
+    if(!p2TrackList1)
     {
-        if(P2TrackListAppend(p2TrackList1, p2TrackList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        p2TrackList1 = p2TrackList2;
+        return OK;
     }
-    return OK;
+    else{
+        P2TrackNode* p = p2TrackList2;
+        while(p)
+        {
+            P2TrackListAppend(p2TrackList1, p->p2Track);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state P2TrackListEmpty(P2TrackList &p2TrackList)
 {
-    p2TrackList.length = 0;
+    P2TrackNode* p = p2TrackList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state P2TrackListDestroy(P2TrackList &p2TrackList)
 {
-    p2TrackList.size = p2TrackList.length = 0;
-    free(p2TrackList.arr);
-    return OK;
+    return P2TrackListEmpty(p2TrackList);
 }

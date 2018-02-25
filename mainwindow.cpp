@@ -340,102 +340,154 @@ void MainWindow::on_loadFile_clicked()
 
 state PointListInit(PointList &pointList)
 {
-    pointList.length = 0;
-    pointList.arr = (Point*)malloc(INITIALSIZE * sizeof(Point));
-    if(!pointList.arr)
-        return ERROR;
-    pointList.size = INITIALSIZE;
+    if(pointList)
+    {
+        PointListEmpty(pointList);
+    }
     return OK;
 }
 
 state PointListAppend(PointList &pointList, Point point)
 {
-    if(pointList.length == pointList.size)
+    if(!pointList)
     {
-        pointList.size += STEPSIZE;
-        pointList.arr = (Point*)realloc(pointList.arr, pointList.size * sizeof(Point));
-        if(!pointList.arr)
+        PointNode* p = (PointNode*)malloc(sizeof(PointNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->point = point;
+        p->next = NULL;
+        pointList = p;
+        return OK;
     }
-    pointList.arr[pointList.length] = point;
-    pointList.length++;
-    return OK;
+    else{
+        PointNode* p = pointList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        PointNode* q = (PointNode*)malloc(sizeof(PointNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->point = point;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state PointListAppendList(PointList &pointList1, PointList pointList2)
 {
-    for(int i = 0; i < pointList2.length; i++)
+    if(!pointList1)
     {
-        if(PointListAppend(pointList1, pointList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        pointList1 = pointList2;
+        return OK;
     }
-    return OK;
+    else{
+        PointNode* p = pointList2;
+        while(p)
+        {
+            PointListAppend(pointList1, p->point);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state PointListEmpty(PointList &pointList)
 {
-    pointList.length = 0;
+    PointNode* p = pointList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state PointListDestroy(PointList &pointList)
 {
-    pointList.size = pointList.length = 0;
-    free(pointList.arr);
-    return OK;
+    return PointListEmpty(pointList);
 }
 
 state DLineListInit(DLineList &dLineList)
 {
-    dLineList.length = 0;
-    dLineList.arr = (DLine*)malloc(INITIALSIZE * sizeof(DLine));
-    if(!dLineList.arr)
-        return ERROR;
-    dLineList.size = INITIALSIZE;
+    if(dLineList)
+    {
+        DLineListEmpty(dLineList);
+    }
     return OK;
 }
 
 state DLineListAppend(DLineList &dLineList, DLine dLine)
 {
-    if(dLineList.length == dLineList.size)
+    if(!dLineList)
     {
-        dLineList.size += STEPSIZE;
-        dLineList.arr = (DLine*)realloc(dLineList.arr, dLineList.size * sizeof(DLine));
-        if(!dLineList.arr)
+        DLineNode* p = (DLineNode*)malloc(sizeof(DLineNode));
+        if(!p)
         {
             return ERROR;
         }
+        p->dLine = dLine;
+        p->next = NULL;
+        dLineList = p;
+        return OK;
     }
-    dLineList.arr[dLineList.length] = dLine;
-    dLineList.length++;
-    return OK;
+    else{
+        DLineNode* p = dLineList;
+        while(p->next)
+        {
+            p = p->next;
+        }
+        DLineNode* q = (DLineNode*)malloc(sizeof(DLineNode));
+        if(!q)
+        {
+            return ERROR;
+        }
+        q->dLine = dLine;
+        q->next = NULL;
+        p->next = q;
+        return OK;
+    }
 }
 
 state DLineListAppendList(DLineList &dLineList1, DLineList dLineList2)
 {
-    for(int i = 0; i < dLineList2.length; i++)
+    if(!dLineList1)
     {
-        if(DLineListAppend(dLineList1, dLineList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
+        dLineList1 = dLineList2;
+        return OK;
     }
-    return OK;
+    else{
+        DLineNode* p = dLineList2;
+        while(p)
+        {
+            DLineListAppend(dLineList1, p->dLine);
+            p = p->next;
+        }
+        return OK;
+    }
 }
 
 state DLineListEmpty(DLineList &dLineList)
 {
-    dLineList.length = 0;
+    DLineNode* p = dLineList;
+    while(p)
+    {
+        q = p->next;
+        free(p);
+        p = q;
+    }
     return OK;
+
 }
 
 state DLineListDestroy(DLineList &dLineList)
 {
-    dLineList.size = dLineList.length = 0;
-    free(dLineList.arr);
-    return OK;
+    return DLineListEmpty(dLineList);
 }
