@@ -206,8 +206,9 @@ struct Map
     int** matrix;
     int** dist;
     int** path;
-    QVector<Station*> vertexTable;
-    QList<Edge> edges;
+    Station** vertexTable;
+    //QVector<Station*> vertexTable;
+    //QList<Edge> edges;
 };
 
 state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &outputBufa);
@@ -260,5 +261,11 @@ state EdgeListAppend(EdgeList &edgeList, Edge edge);
 state EdgeListAppendList(EdgeList &edgeList1, EdgeList edgeList2);
 state EdgeListEmpty(EdgeList &edgeList);
 state EdgeListDestroy(EdgeList &edgeList);
+
+state SubwaySystemDestroy(SubwaySystem subwaySystem);
+
+state InitMap(SubwaySystem &subwaySystem, Map &map);
+int FindPosInVertexTable(Station* station, Map map);
+state DestroyMap(Map &map);
 
 #endif // SUBWAYSTATION_H

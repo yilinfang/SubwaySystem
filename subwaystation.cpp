@@ -25,6 +25,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
         {
             //subwaySystem.lineTable.append(tempLine);
 //            qDebug() << subwaySystem.lineList.length << subwaySystem.lineList.size;
+            subwaySystem.lineNum++;
             LineListAppend(subwaySystem.lineList, tempLine);
             p2line= LineListLast(subwaySystem.lineList);
             p2line->name = line;
@@ -112,6 +113,7 @@ Station *FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwa
     qDebug() << ptr;
     if(!ptr) //该站点第一次出现
     {
+        subwaySystem.stationNum++;
         Station temp;
         temp.trackList = NULL;
         temp.transferLines = NULL;
@@ -238,6 +240,7 @@ Track* FindOrNewTrack(Station *station1, Station *station2, int weight, Line *p2
         }
         p = p->next;
     }
+    subwaySystem.edgeNum++;
     Track temp;
     temp.s1 = station1;
     temp.s2 = station2;
@@ -890,4 +893,89 @@ state P2TrackListEmpty(P2TrackList &p2TrackList)
 state P2TrackListDestroy(P2TrackList &p2TrackList)
 {
     return P2TrackListEmpty(p2TrackList);
+}
+
+state SubwaySystemDestroy(SubwaySystem subwaySystem)
+{
+    subwaySystem.edgeNum = subwaySystem.lineNum = subwaySystem.stationNum = 0;
+    LineNode* line = subwaySystem.lineList;
+    StationNode* station = subwaySystem.stationList;
+    TrackNode* track = subwaySystem.trackList;
+    while(line)
+    {
+        P2StationListDestroy(line->inLineStations);
+        P2TrackListDestroy(line->inLineTrack);
+        line = line->next;
+    }
+    while(station)
+    {
+        P2LineListDestroy(station->transferLines);
+        P2TrackListDestroy(station->trackList);
+        station = station->next;
+    }
+    while(track)
+    {
+        P2LineListDestroy(track->LineList);
+        track->s1 = track->s2 = NULL;
+        track = track->next;
+    }
+    return OK;
+}
+
+state InitMap(SubwaySystem &subwaySystem, Map &map)
+{
+    map.vertexNum = subwaySystem.stationNum;
+    map.edgeNum = subwaySystem.edgeNum;
+    map.matrix = new int*[map.vertexNum]{NULL};
+    map.dist = new int*[map.vertexNum]{NULL};
+    map.path = new int*[map.vertexNum]{NULL};
+    map.vertexTable = new Station*[map.vertexNum]{NULL};
+    StationNode* p = subwaySystem.stationList;
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        map.matrix[i] = new int[map.vertexNum]{0};
+        map.dist[i] = new int[map.vertexNum]{0};
+        map.path[i] = new int[map.vertexNum]{0};
+        map.vertexTable[i] = p;
+        p = p->next;
+    }
+    TrackNode* q = subwaySystem.trackList;
+    while(q)
+    {
+        int i,j;
+        i = FindPosInVertexTable(q->s1, map);
+        j = FindPosInVertexTable(q->s2, map);
+        map.matrix[i][j] = map.matrix[j][i] = q->weight;
+        q=q->next;
+    }
+    return OK;
+}
+
+int FindPosInVertexTable(Station *station, Map map)
+{
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        if(map.vertexTable[i] == station)
+        {
+            return i;
+            break;
+        }
+    }
+    return -1;
+}
+
+state DestroyMap(Map &map)
+{
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        delete[] map.matrix[i];
+        delete[] map.dist[i];
+        delete[] map.path[i];
+    }
+    delete[] map.matrix;
+    delete[] map.dist;
+    delete[] map.path;
+    delete[] map.vertexTable;
+    map.edgeNum = map.vertexNum = 0;
+    return OK;
 }

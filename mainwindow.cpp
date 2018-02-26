@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     subwaySystem.lineList = NULL;
     subwaySystem.trackList = NULL;
     subwaySystem.stationList = NULL;
+    subwaySystem.edgeNum = 0;
+    subwaySystem.lineNum = 0;
+    subwaySystem.stationNum = 0;
     //temp = "qt";
 }
 
