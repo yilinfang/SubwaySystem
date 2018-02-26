@@ -12,6 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
     setFixedSize(1024,768);
     setMouseTracking(true);
     ui->centralWidget->setMouseTracking(true);
+    ui->displayLabel1->setWordWrap(true);
+    ui->displayLabel2->setWordWrap(true);
+    ui->displayLabel3->setWordWrap(true);
+    ui->displayLabel1->setAlignment(Qt::AlignTop);
+    ui->displayLabel2->setAlignment(Qt::AlignTop);
+    ui->displayLabel3->setAlignment(Qt::AlignTop);
+    //ui->horizontalLayout->setSizeConstraint(QLayout::SetFixedSize);
     points2Draw = NULL;
     drawedPoints = NULL;
     lines2Draw = NULL;
@@ -27,12 +34,28 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+//    SubwaySystemDestroy(subwaySystem);
+//    DestroyMap(map);
+//    PointListDestroy(points2Draw);
+//    PointListDestroy(drawedPoints);
+//    DLineListDestroy(lines2Draw);
+//    DLineListDestroy(drawedTracks);
     delete ui;
 }
 
 void MainWindow::ShowStation(Station *station)
 {
-    ui->statusBar->showMessage(station->name);
+    QString str;
+    str += station->name;
+    str += " ";
+    P2LineNode* p = station->transferLines;
+    while(p)
+    {
+        str += p->p2Line->name;
+        str += " ";
+        p = p->next;
+    }
+    ui->statusBar->showMessage(str);
 }
 
 void MainWindow::ShowTrack(Track *track)
@@ -140,7 +163,7 @@ void MainWindow::SetPointColor(StationList &stations, QColor color, PointList &l
     StationNode* p = stations;
     while (p)
     {
-        qDebug() << p->name;
+        //qDebug() << p->name;
         Point point;
         point.station = p;
         point.color = color;
@@ -224,9 +247,12 @@ void MainWindow::ShowChosenStation()
 //    }
     if(!chosenStations)
     {
+        //ui->displayLabel2->adjustSize();
+        //ui->displayLabel2->setAlignment(Qt::AlignTop);
         ui->displayLabel2->setText("未选中任何站点!");
     }
     else{
+        //ui->displayLabel2->setWordWrap(true);
         P2StationNode* p = chosenStations;
         QString str;
         while(p)
@@ -242,6 +268,11 @@ void MainWindow::ShowChosenStation()
 void MainWindow::ShowChosenTracks()
 {
     //ui->displayLabel3->setText(track->s1->name + "---" + track->s2->name);
+    if(!chosenTracks)
+    {
+        ui->displayLabel1->setText("未选中任何边!");
+    }
+
 }
 
 
@@ -264,21 +295,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
 //            painter.drawPoint(iter->station->pos.x(), iter->station->pos.y());
 //        }
 //    }
-    if(points2Draw)
-    {
-        signal = 1;
-        PointListEmpty(drawedPoints);
-        PointListAppendList(drawedPoints, points2Draw);
-        PointNode* p = points2Draw;
-        while(p)
-        {
-            qDebug() << "point";
-            painter.setPen(QPen(p->color, 10, Qt::SolidLine, Qt::RoundCap));
-            painter.drawPoint(p->station->pos);
-            p = p->next;
-        }
-        //PointListEmpty(points2Draw);
-    }
     if(lines2Draw)
     {
         signal = 1;
@@ -288,12 +304,27 @@ void MainWindow::paintEvent(QPaintEvent *event)
         DLineNode* p = lines2Draw;
         while(p)
         {
-            qDebug() << "track";
+            //qDebug() << "track";
             painter.setPen(QPen(p->color, 5, Qt::SolidLine, Qt::RoundCap));
             painter.drawLine(p->track->s1->pos, p->track->s2->pos);
             p = p->next;
         }
         //DLineListEmpty(lines2Draw);
+    }
+    if(points2Draw)
+    {
+        signal = 1;
+        PointListEmpty(drawedPoints);
+        PointListAppendList(drawedPoints, points2Draw);
+        PointNode* p = points2Draw;
+        while(p)
+        {
+            //qDebug() << "point";
+            painter.setPen(QPen(p->color, 10, Qt::SolidLine, Qt::RoundCap));
+            painter.drawPoint(p->station->pos);
+            p = p->next;
+        }
+        //PointListEmpty(points2Draw);
     }
 //    if(!lines2draw.isEmpty())
 //    {
@@ -332,7 +363,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
 //            painter.drawLine(lines2Draw.arr[i].track->s1->pos, lines2Draw.arr[i].track->s2->pos);
 //        }
 //    }
-    qDebug() << "test";
+    //qDebug() << "test";
 }
 
 
@@ -362,17 +393,17 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << outputBufa;
     fileName = "data.txt";
     SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
-    qDebug() << 0;
+    //qDebug() << 0;
     PointList pointList = NULL;
     SetPointColor(subwaySystem.stationList, Qt::red, pointList);
-    qDebug() << pointList;
+    //qDebug() << pointList;
     PointListAppendList(points2Draw, pointList);
     PointListDestroy(pointList);
     DLineList dLineList = NULL;
     SetLineColor(subwaySystem.trackList, Qt::blue, dLineList);
     DLineListAppendList(lines2Draw, dLineList);
     DLineListDestroy(dLineList);
-    qDebug() << 3;
+    //qDebug() << 3;
     QWidget::update();
 }
 
@@ -487,7 +518,7 @@ state PointListAppendList(PointList &pointList1, PointList pointList2)
     PointNode* p = pointList2;
     while(p)
     {
-        qDebug() << p->station->name;
+        //qDebug() << p->station->name;
         PointListAppend(pointList1, *p);
         p = p->next;
     }
@@ -584,4 +615,12 @@ state DLineListEmpty(DLineList &dLineList)
 state DLineListDestroy(DLineList &dLineList)
 {
     return DLineListEmpty(dLineList);
+}
+
+void MainWindow::on_updateDisplay_clicked()
+{
+    P2StationListEmpty(chosenStations);
+    P2TrackListEmpty(chosenTracks);
+    ShowChosenStation();
+    ShowChosenTracks();
 }

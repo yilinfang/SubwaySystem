@@ -31,7 +31,6 @@ typedef struct P2LineNode P2LineNode;
 typedef struct Track Track;
 typedef Track TrackNode;
 typedef struct P2TrackNode P2TrackNode;
-typedef struct Edge Edge;
 typedef struct SubwaySystem SubwaySystem;
 typedef struct Map Map;
 typedef StationNode* StationList;
@@ -40,7 +39,6 @@ typedef TrackNode* TrackList;
 typedef P2TrackNode* P2TrackList;
 typedef LineNode* LineList;
 typedef P2LineNode* P2LineList;
-typedef struct EdgeList EdgeList;
 
 //struct P2LineList{
 //    int size;
@@ -181,23 +179,6 @@ struct SubwaySystem
     TrackList trackList;
 };
 
-struct Edge
-{
-    int i,j;
-    int weight;
-};
-
-struct EdgeList
-{
-    int size;
-    int length;
-    Edge* arr;
-    EdgeList()
-    {
-        size = length = 0;
-        arr = NULL;
-    }
-};
 
 struct Map
 {
@@ -255,12 +236,6 @@ state P2TrackListAppendList(P2TrackList &p2TrackList1, P2TrackList p2TrackList2)
 state P2TrackListAppend(P2TrackList &P2TrackList, Track* p2Track);
 state P2TrackListEmpty(P2TrackList &P2TrackList);
 state P2TrackListDestroy(P2TrackList &P2TrackList);
-
-state EdgeListInit(EdgeList &edgeList);
-state EdgeListAppend(EdgeList &edgeList, Edge edge);
-state EdgeListAppendList(EdgeList &edgeList1, EdgeList edgeList2);
-state EdgeListEmpty(EdgeList &edgeList);
-state EdgeListDestroy(EdgeList &edgeList);
 
 state SubwaySystemDestroy(SubwaySystem subwaySystem);
 

@@ -111,6 +111,7 @@ private slots:
     void on_pushButton_clicked();
     void on_saveFile_clicked();
     void on_loadFile_clicked();
+    void on_updateDisplay_clicked();
 };
 
 state PointListInit(PointList &pointList);

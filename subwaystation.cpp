@@ -13,6 +13,7 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
     Line tempLine;
     tempLine.inLineStations = NULL;
     tempLine.inLineTrack = NULL;
+    tempLine.next = NULL;
     Line* p2line;
 //    LineListInit(subwaySystem.lineList);
 //    StationListInit(subwaySystem.stationList);
@@ -40,9 +41,11 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
             QList<QString>::iterator iter = tempList.begin();
             QString name1 = *iter;
             qDebug() << name1;
+            qDebug() << p2line->name;
             StationNode *ptr1, *ptr2;
             ptr1 = ptr2 = NULL;
             ptr1 = FindOrNewStation(name1, p2line, subwaySystem);
+            qDebug() << 10;
             ++iter;
             bool flag;
             bool* ptr = &flag;
@@ -110,9 +113,10 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
 Station *FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwaySystem)
 {
     Station* ptr = FindStationByName(stationName, subwaySystem);
-    qDebug() << ptr;
+    //qDebug() << ptr;
     if(!ptr) //该站点第一次出现
     {
+        qDebug() << 20;
         subwaySystem.stationNum++;
         Station temp;
         temp.trackList = NULL;
@@ -154,6 +158,7 @@ Station *FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwa
                 signal = 1;
                 break;
             }
+            p = p->next;
         }
         if(!signal) //该站点出现在一条新线路中
         {
@@ -251,6 +256,7 @@ Track* FindOrNewTrack(Station *station1, Station *station2, int weight, Line *p2
     TrackNode* ptr = TrackListLast(subwaySystem.trackList);
     P2TrackListAppend(station1->trackList, ptr);
     P2TrackListAppend(station2->trackList, ptr);
+    P2TrackListAppend(p2line->inLineTrack, ptr);
     return ptr;
 }
 
@@ -595,57 +601,6 @@ state TrackListEmpty(TrackList &trackList)
 state TrackListDestroy(TrackList &trackList)
 {
     return TrackListEmpty(trackList);
-}
-
-state EdgeListInit(EdgeList &edgeList)
-{
-    edgeList.length = 0;
-    edgeList.arr = (Edge*)malloc(INITIALSIZE * sizeof(Edge));
-    if(!edgeList.arr)
-        return ERROR;
-    edgeList.size = INITIALSIZE;
-    return OK;
-}
-
-state EdgeListAppend(EdgeList &edgeList, Edge edge)
-{
-    if(edgeList.length == edgeList.size)
-    {
-        edgeList.size += STEPSIZE;
-        edgeList.arr = (Edge*)realloc(edgeList.arr, edgeList.size * sizeof(Edge));
-        if(!edgeList.arr)
-        {
-            return ERROR;
-        }
-    }
-    edgeList.arr[edgeList.length] = edge;
-    edgeList.length++;
-    return OK;
-}
-
-state EdgeListAppendList(EdgeList &edgeList1, EdgeList edgeList2)
-{
-    for(int i = 0; i < edgeList2.length; i++)
-    {
-        if(EdgeListAppend(edgeList1, edgeList2.arr[i]) == ERROR)
-        {
-            return ERROR;
-        }
-    }
-    return OK;
-}
-
-state EdgeListEmpty(EdgeList &edgeList)
-{
-    edgeList.length = 0;
-    return OK;
-}
-
-state EdgeListDestroy(EdgeList &edgeList)
-{
-    edgeList.size = edgeList.length = 0;
-    free(edgeList.arr);
-    return OK;
 }
 
 state P2StationListInit(P2StationList &p2StationList)
