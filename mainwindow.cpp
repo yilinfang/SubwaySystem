@@ -12,6 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
     setFixedSize(1024,768);
     setMouseTracking(true);
     ui->centralWidget->setMouseTracking(true);
+    points2Draw = NULL;
+    drawedPoints = NULL;
+    lines2Draw = NULL;
+    drawedTracks = NULL;
+    subwaySystem.lineList = NULL;
+    subwaySystem.trackList = NULL;
+    subwaySystem.stationList = NULL;
     //temp = "qt";
 }
 
@@ -47,15 +54,25 @@ Station *MainWindow::IsStationAround(QPoint pos)
 //        }
 //    }
 //    return NULL;
-    if(drawedPoints.length == 0)
+    if(!drawedPoints)
         return NULL;
-    for(int i = 0; i < drawedPoints.length - 1; i++)
+//    for(int i = 0; i < drawedPoints.length - 1; i++)
+//    {
+//        long dis = (drawedPoints.arr[i].station->pos.x() - pos.x()) * (drawedPoints.arr[i].station->pos.x() - pos.x()) + (drawedPoints.arr[i].station->pos.y() - pos.y()) * (drawedPoints.arr[i].station->pos.y() - pos.y());
+//        if(dis <= 4)
+//        {
+//            return drawedPoints.arr[i].station;
+//        }
+//    }
+    PointNode* p = drawedPoints;
+    while(p)
     {
-        long dis = (drawedPoints.arr[i].station->pos.x() - pos.x()) * (drawedPoints.arr[i].station->pos.x() - pos.x()) + (drawedPoints.arr[i].station->pos.y() - pos.y()) * (drawedPoints.arr[i].station->pos.y() - pos.y());
+        long dis = (p->station->pos.x() - pos.x()) * (p->station->pos.x() - pos.x()) + (p->station->pos.y() - pos.y()) * (p->station->pos.y() - pos.y());
         if(dis <= 4)
         {
-            return drawedPoints.arr[i].station;
+            return p->station;
         }
+        p = p->next;
     }
     return NULL;
 }
@@ -76,34 +93,57 @@ Track *MainWindow::IsTrackAround(QPoint pos)
 //        }
 //    }
 //    return NULL;
-    if(drawedTracks.length == 0)
+    if(!drawedTracks)
     {
         return NULL;
     }
-    for(int i = 0; i < drawedTracks.length - 1; i++)
+//    for(int i = 0; i < drawedTracks.length - 1; i++)
+//    {
+//        if((pos.x() - drawedTracks.arr[i].track->s1->pos.x()) * (drawedTracks.arr[i].track->s2->pos.y() - drawedTracks.arr[i].track->s1->pos.y()) == (drawedTracks.arr[i].track->s1->pos.x() - drawedTracks.arr[i].track->s2->pos.x()) * (pos.y() - drawedTracks.arr[i].track->s1->pos.y()))
+//        {
+//            if((pos.x() - drawedTracks.arr[i].track->s1->pos.x()) * (pos.x() - drawedTracks.arr[i].track->s2->pos.x()) <= 0 && (pos.y() - drawedTracks.arr[i].track->s1->pos.y()) * (pos.y() - drawedTracks.arr[i].track->s2->pos.y()) <= 0)
+//            {
+//                return  drawedTracks.arr[i].track;
+//            }
+//        }
+//    }
+    DLineNode *p = drawedTracks;
+    while(p)
     {
-        if((pos.x() - drawedTracks.arr[i].track->s1->pos.x()) * (drawedTracks.arr[i].track->s2->pos.y() - drawedTracks.arr[i].track->s1->pos.y()) == (drawedTracks.arr[i].track->s1->pos.x() - drawedTracks.arr[i].track->s2->pos.x()) * (pos.y() - drawedTracks.arr[i].track->s1->pos.y()))
+        if((pos.x() - p->track->s1->pos.x()) * (p->track->s2->pos.y() - p->track->s1->pos.y()) == (p->track->s1->pos.x() - p->track->s1->pos.x()) * (pos.y() - p->track->s1->pos.y()))
         {
-            if((pos.x() - drawedTracks.arr[i].track->s1->pos.x()) * (pos.x() - drawedTracks.arr[i].track->s2->pos.x()) <= 0 && (pos.y() - drawedTracks.arr[i].track->s1->pos.y()) * (pos.y() - drawedTracks.arr[i].track->s2->pos.y()) <= 0)
+            if((pos.x() - p->track->s1->pos.x()) * (pos.x() - p->track->s2->pos.x()) <= 0 && (pos.y() - p->track->s1->pos.y()) * (pos.y() - p->track->s2->pos.y()) <= 0)
             {
-                return  drawedTracks.arr[i].track;
+                return p->track;
             }
         }
+        p = p->next;
     }
     return NULL;
 }
 
 void MainWindow::SetPointColor(StationList &stations, QColor color, PointList &list)
 {
-    if(stations.size != 0)
+//    if(stations.size != 0)
+//    {
+//        for(int i = 0; i < stations.length - 1; i++)
+//        {
+//            Point point;
+//            point.station = &stations.arr[i];
+//            point.color = color;
+//            PointListAppend(list, point);
+//        }
+//    }
+    StationNode* p = stations;
+    while (p)
     {
-        for(int i = 0; i < stations.length - 1; i++)
-        {
-            Point point;
-            point.station = &stations.arr[i];
-            point.color = color;
-            PointListAppend(list, point);
-        }
+        qDebug() << p->name;
+        Point point;
+        point.station = p;
+        point.color = color;
+        point.next = NULL;
+        PointListAppend(list, point);
+        p = p->next;
     }
 }
 
@@ -128,15 +168,25 @@ void MainWindow::SetPointColor(StationList &stations, QColor color, PointList &l
 
 void MainWindow::SetLineColor(TrackList &tracks, QColor color, DLineList &list)
 {
-    if(tracks.length != 0)
+//    if(tracks.length != 0)
+//    {
+//        for(int i = 0; i < tracks.length - 1; i++)
+//        {
+//            DLine line;
+//            line.track = &tracks.arr[i];
+//            line.color = color;
+//            DLineListAppend(list, line);
+//        }
+//    }
+    TrackNode* p = tracks;
+    while(p)
     {
-        for(int i = 0; i < tracks.length - 1; i++)
-        {
-            DLine line;
-            line.track = &tracks.arr[i];
-            line.color = color;
-            DLineListAppend(list, line);
-        }
+        DLine line;
+        line.track = p;
+        line.color = color;
+        line.next = NULL;
+        DLineListAppend(list, line);
+        p = p->next;
     }
 }
 
@@ -156,16 +206,31 @@ void MainWindow::ShowChosenStation()
 //        }
 //        ui->displayLabel2->setText(str);
 //    }
-    if(chosenStations.length == 0)
+//    if(chosenStations.length == 0)
+//    {
+//        ui->displayLabel2->setText("未选中任何站点!");
+//    }
+//    else{
+//        QString str;
+//        for(int i = 0; i < chosenStations.length - 1; i++)
+//        {
+//            str += chosenStations.arr[i]->name;
+//            str += " ";
+//        }
+//        ui->displayLabel2->setText(str);
+//    }
+    if(!chosenStations)
     {
         ui->displayLabel2->setText("未选中任何站点!");
     }
     else{
+        P2StationNode* p = chosenStations;
         QString str;
-        for(int i = 0; i < chosenStations.length - 1; i++)
+        while(p)
         {
-            str += chosenStations.arr[i]->name;
+            str += p->p2Station->name;
             str += " ";
+            p = p->next;
         }
         ui->displayLabel2->setText(str);
     }
@@ -196,6 +261,37 @@ void MainWindow::paintEvent(QPaintEvent *event)
 //            painter.drawPoint(iter->station->pos.x(), iter->station->pos.y());
 //        }
 //    }
+    if(points2Draw)
+    {
+        signal = 1;
+        PointListEmpty(drawedPoints);
+        PointListAppendList(drawedPoints, points2Draw);
+        PointNode* p = points2Draw;
+        while(p)
+        {
+            qDebug() << "point";
+            painter.setPen(QPen(p->color, 10, Qt::SolidLine, Qt::RoundCap));
+            painter.drawPoint(p->station->pos);
+            p = p->next;
+        }
+        //PointListEmpty(points2Draw);
+    }
+    if(lines2Draw)
+    {
+        signal = 1;
+        DLineListEmpty(drawedTracks);
+        DLineListAppendList(drawedTracks, lines2Draw);
+        //DLineListEmpty(lines2Draw);
+        DLineNode* p = lines2Draw;
+        while(p)
+        {
+            qDebug() << "track";
+            painter.setPen(QPen(p->color, 5, Qt::SolidLine, Qt::RoundCap));
+            painter.drawLine(p->track->s1->pos, p->track->s2->pos);
+            p = p->next;
+        }
+        //DLineListEmpty(lines2Draw);
+    }
 //    if(!lines2draw.isEmpty())
 //    {
 //        drawedTracks.clear();
@@ -211,28 +307,29 @@ void MainWindow::paintEvent(QPaintEvent *event)
 //            //qDebug() << iter->s1->pos.x() << iter->s1->pos.y() << iter->s2->pos.x() << iter->s2->pos.y();
 //        }
 //    }
-    if(points2Draw.length != 0)
-    {
-        signal = 1;
-        PointListEmpty(drawedPoints);
-        PointListAppendList(drawedPoints, points2Draw);
-        for(int i = 0; i < points2Draw.length - 1; i++)
-        {
-            painter.setPen(QPen(points2Draw.arr[i].color,10,Qt::SolidLine,Qt::RoundCap));
-            painter.drawPoint(points2Draw.arr[i].station->pos);
-        }
-    }
-    if(lines2Draw.length != 0)
-    {
-        signal = 1;
-        DLineListEmpty(drawedTracks);
-        DLineListAppendList(drawedTracks, lines2Draw);
-        for(int i = 0; i < lines2Draw.length - 1; i++)
-        {
-            painter.setPen(QPen(lines2Draw.arr[i].color,5,Qt::SolidLine,Qt::RoundCap));
-            painter.drawLine(lines2Draw.arr[i].track->s1->pos, lines2Draw.arr[i].track->s2->pos);
-        }
-    }
+//    if(points2Draw.length != 0)
+//    {
+//        signal = 1;
+//        PointListEmpty(drawedPoints);
+//        PointListAppendList(drawedPoints, points2Draw);
+//        for(int i = 0; i < points2Draw.length - 1; i++)
+//        {
+//            painter.setPen(QPen(points2Draw.arr[i].color,10,Qt::SolidLine,Qt::RoundCap));
+//            painter.drawPoint(points2Draw.arr[i].station->pos);
+//        }
+//    }
+//    if(lines2Draw.length != 0)
+//    {
+//        signal = 1;
+//        DLineListEmpty(drawedTracks);
+//        DLineListAppendList(drawedTracks, lines2Draw);
+//        for(int i = 0; i < lines2Draw.length - 1; i++)
+//        {
+//            painter.setPen(QPen(lines2Draw.arr[i].color,5,Qt::SolidLine,Qt::RoundCap));
+//            painter.drawLine(lines2Draw.arr[i].track->s1->pos, lines2Draw.arr[i].track->s2->pos);
+//        }
+//    }
+    qDebug() << "test";
 }
 
 
@@ -262,14 +359,17 @@ void MainWindow::on_pushButton_clicked()
     qDebug() << outputBufa;
     fileName = "data.txt";
     SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
-    PointList pointList;
+    qDebug() << 0;
+    PointList pointList = NULL;
     SetPointColor(subwaySystem.stationList, Qt::red, pointList);
+    qDebug() << pointList;
     PointListAppendList(points2Draw, pointList);
     PointListDestroy(pointList);
-    DLineList dLineList;
+    DLineList dLineList = NULL;
     SetLineColor(subwaySystem.trackList, Qt::blue, dLineList);
     DLineListAppendList(lines2Draw, dLineList);
     DLineListDestroy(dLineList);
+    qDebug() << 3;
     QWidget::update();
 }
 
@@ -278,7 +378,7 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint pos = event->pos();
-    if(drawedPoints.length != 0)
+    if(drawedPoints)
     {
         Station* ptr = IsStationAround(pos);
         if(ptr)
@@ -287,7 +387,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             return;
         }
     }
-    if(drawedTracks.length != 0)
+    if(drawedTracks)
     {
         Track* ptr = IsTrackAround(pos);
         if(ptr)
@@ -351,12 +451,12 @@ state PointListAppend(PointList &pointList, Point point)
 {
     if(!pointList)
     {
-        PointNode* p = (PointNode*)malloc(sizeof(PointNode));
+        PointNode* p = new PointNode;
         if(!p)
         {
             return ERROR;
         }
-        p->point = point;
+        *p = point;
         p->next = NULL;
         pointList = p;
         return OK;
@@ -367,12 +467,12 @@ state PointListAppend(PointList &pointList, Point point)
         {
             p = p->next;
         }
-        PointNode* q = (PointNode*)malloc(sizeof(PointNode));
+        PointNode* q = new PointNode;
         if(!q)
         {
             return ERROR;
         }
-        q->point = point;
+        *q = point;
         q->next = NULL;
         p->next = q;
         return OK;
@@ -381,31 +481,27 @@ state PointListAppend(PointList &pointList, Point point)
 
 state PointListAppendList(PointList &pointList1, PointList pointList2)
 {
-    if(!pointList1)
+    PointNode* p = pointList2;
+    while(p)
     {
-        pointList1 = pointList2;
-        return OK;
+        qDebug() << p->station->name;
+        PointListAppend(pointList1, *p);
+        p = p->next;
     }
-    else{
-        PointNode* p = pointList2;
-        while(p)
-        {
-            PointListAppend(pointList1, p->point);
-            p = p->next;
-        }
-        return OK;
-    }
+    return OK;
 }
 
 state PointListEmpty(PointList &pointList)
 {
     PointNode* p = pointList;
+    PointNode* q;
     while(p)
     {
         q = p->next;
-        free(p);
+        delete p;
         p = q;
     }
+    pointList = NULL;
     return OK;
 
 }
@@ -428,12 +524,12 @@ state DLineListAppend(DLineList &dLineList, DLine dLine)
 {
     if(!dLineList)
     {
-        DLineNode* p = (DLineNode*)malloc(sizeof(DLineNode));
+        DLineNode* p = new DLineNode;
         if(!p)
         {
             return ERROR;
         }
-        p->dLine = dLine;
+        *p = dLine;
         p->next = NULL;
         dLineList = p;
         return OK;
@@ -444,12 +540,12 @@ state DLineListAppend(DLineList &dLineList, DLine dLine)
         {
             p = p->next;
         }
-        DLineNode* q = (DLineNode*)malloc(sizeof(DLineNode));
+        DLineNode* q = new DLineNode;
         if(!q)
         {
             return ERROR;
         }
-        q->dLine = dLine;
+        *q = dLine;
         q->next = NULL;
         p->next = q;
         return OK;
@@ -458,31 +554,26 @@ state DLineListAppend(DLineList &dLineList, DLine dLine)
 
 state DLineListAppendList(DLineList &dLineList1, DLineList dLineList2)
 {
-    if(!dLineList1)
+    DLineNode* p = dLineList2;
+    while(p)
     {
-        dLineList1 = dLineList2;
-        return OK;
+        DLineListAppend(dLineList1, *p);
+        p = p->next;
     }
-    else{
-        DLineNode* p = dLineList2;
-        while(p)
-        {
-            DLineListAppend(dLineList1, p->dLine);
-            p = p->next;
-        }
-        return OK;
-    }
+    return OK;
 }
 
 state DLineListEmpty(DLineList &dLineList)
 {
     DLineNode* p = dLineList;
+    DLineNode* q;
     while(p)
     {
         q = p->next;
-        free(p);
+        delete p;
         p = q;
     }
+    dLineList = NULL;
     return OK;
 
 }

@@ -9,8 +9,8 @@
 #include "QStringList"
 #include "QDebug"
 //#include "stdio.h"
-//#include "stdlib.h"
-//#include "malloc/malloc.h"
+#include "stdlib.h"
+#include "malloc/malloc.h"
 
 #define INF 10000
 #define OK 1
@@ -23,13 +23,13 @@ using namespace std;
 
 typedef int state;
 typedef struct Station Station;
-typedef struct StationNode StationNode;
+typedef Station StationNode;
 typedef struct P2StationNode P2StationNode;
 typedef struct Line Line;
-typedef struct LineNode LineNode;
+typedef Line LineNode;
 typedef struct P2LineNode P2LineNode;
 typedef struct Track Track;
-typedef struct TrackNode TrackNode;
+typedef Track TrackNode;
 typedef struct P2TrackNode P2TrackNode;
 typedef struct Edge Edge;
 typedef struct SubwaySystem SubwaySystem;
@@ -53,11 +53,6 @@ typedef struct EdgeList EdgeList;
 //    }
 //};
 
-struct StationNode
-{
-    Station station;
-    StationNode* next;
-};
 
 struct P2StationNode
 {
@@ -65,11 +60,6 @@ struct P2StationNode
     P2StationNode* next;
 };
 
-struct TrackNode
-{
-    Track track;
-    TrackNode* next;
-};
 
 struct P2TrackNode
 {
@@ -87,11 +77,11 @@ struct P2TrackNode
 //    }
 //};
 
-struct LineNode
-{
-    Line line;
-    LineNode* next;
-};
+//struct LineNode
+//{
+//    Line line;
+//    LineNode* next;
+//};
 
 struct P2LineNode
 {
@@ -107,6 +97,7 @@ struct Station
     P2LineList transferLines;
     //QList<Track*> p2Tracks;
     P2TrackList trackList;
+    Station* next;
 };
 
 //struct StationList
@@ -139,6 +130,7 @@ struct Line{
     P2StationList inLineStations;
     //QList<Track*> p2inLineTracks;
     P2TrackList inLineTrack;
+    Line* next;
 };
 
 //struct LineList{
@@ -161,6 +153,7 @@ struct Track{
     int weight;
     //QList<Line*> p2inTrakLines;
     P2LineList LineList;
+    Track* next;
 };
 
 //struct TrackList{
@@ -218,14 +211,15 @@ struct Map
 };
 
 state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &outputBufa);
-Station* FindOrNewStation(QString stationName, Line* p2line,SubwaySystem &subwaySystem);
-Station* FindStationByName(QString stationName, SubwaySystem &subwaySystem);
+Station *FindOrNewStation(QString stationName, Line* p2line,SubwaySystem &subwaySystem);
+Station *FindStationByName(QString stationName, SubwaySystem &subwaySystem);
 Track* FindOrNewTrack(Station* station1, Station* station2, int weight,Line* p2line, SubwaySystem &subwaySystem);
 state SaveSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &outputBufa);
 
 state StationListInit(StationList &stationList);
 state StationListAppend(StationList &stationList, Station station);
 state StationListAppendList(StationList &stationList1, StationList stationList2);
+Station* StationListLast(StationList stationList);
 state StationListEmpty(StationList &stationList);
 state StationListDestroy(StationList &stationList);
 
@@ -238,6 +232,7 @@ state P2StationListDestroy(P2StationList &P2StationList);
 state LineListInit(LineList &lineList);
 state LineListAppend(LineList &lineList, Line &line);
 state LineListAppendList(LineList &lineList1, LineList lineList2);
+Line* LineListLast(LineList &lineList);
 state LineListEmpty(LineList &lineList);
 state LineListDestroy(LineList &lineList);
 
@@ -250,6 +245,7 @@ state P2LineListDestroy (P2LineList  &p2LineList);
 state TrackListInit(TrackList &trackList);
 state TrackListAppend(TrackList &trackList, Track track);
 state TrackListAppendList(TrackList &trackList1, TrackList trackList2);
+TrackNode* TrackListLast(TrackList trackList);
 state TrackListEmpty(TrackList &trackList);
 state TrackListDestroy(TrackList &trackList);
 
