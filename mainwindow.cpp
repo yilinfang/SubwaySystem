@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     drawedPoints = NULL;
     lines2Draw = NULL;
     drawedTracks = NULL;
+    chosenLines = NULL;
     subwaySystem.lineList = NULL;
     subwaySystem.trackList = NULL;
     subwaySystem.stationList = NULL;
@@ -34,12 +35,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-//    SubwaySystemDestroy(subwaySystem);
-//    DestroyMap(map);
-//    PointListDestroy(points2Draw);
-//    PointListDestroy(drawedPoints);
-//    DLineListDestroy(lines2Draw);
-//    DLineListDestroy(drawedTracks);
+    SubwaySystemDestroy(subwaySystem);
+    DestroyMap(map);
+    PointListDestroy(points2Draw);
+    PointListDestroy(drawedPoints);
+    DLineListDestroy(lines2Draw);
+    DLineListDestroy(drawedTracks);
     delete ui;
 }
 
@@ -272,7 +273,39 @@ void MainWindow::ShowChosenTracks()
     {
         ui->displayLabel1->setText("未选中任何边!");
     }
+    else
+    {
+        P2TrackNode* p = chosenTracks;
+        QString str;
+        while(p)
+        {
+            str += p->p2Track->s1->name;
+            str += "---";
+            str += p->p2Track->s2->name;;
+            str +="\n";
+            p = p->next;
+        }
+        ui->displayLabel1->setText(str);
+    }
+}
 
+void MainWindow::ShowChosenLines()
+{
+    if(!chosenLines)
+    {
+        ui->displayLabel3->setText("未选中任何边!");
+    }
+    else{
+        QString str;
+        P2LineList p = chosenLines;
+        while(p)
+        {
+            str += p->p2Line->name;
+            str += " ";
+            p = p->next;
+        }
+        ui->displayLabel3->setText(str);
+    }
 }
 
 
@@ -386,6 +419,7 @@ void MainWindow::on_pushButton_clicked()
 //    lines2draw.append(SetLineColor(subwaySystem.tracks, Qt::red));
 //    //lines2draw.append(subwaySystem.tracks);
 //    QWidget::update();
+    //QString str = ui->inputLine1->testAttribute
     fileName = "data.dat";
     QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
     QString outputBufa;
@@ -403,6 +437,8 @@ void MainWindow::on_pushButton_clicked()
     SetLineColor(subwaySystem.trackList, Qt::blue, dLineList);
     DLineListAppendList(lines2Draw, dLineList);
     DLineListDestroy(dLineList);
+    InitMap(subwaySystem, map);
+    ShowMap(map);
     //qDebug() << 3;
     QWidget::update();
 }
@@ -452,7 +488,14 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
     if(ptr2)
     {
 //        chosenTracks.append(ptr2);
+        qDebug() << "tracks";
         P2TrackListAppend(chosenTracks, ptr2);
+        if(ptr2->LineList->next == NULL)
+        {
+            P2LineListAppend(chosenLines, ptr2->LineList->p2Line);
+            qDebug() << "lines";
+            ShowChosenLines();
+        }
         ShowChosenTracks();
         return;
     }
@@ -621,6 +664,38 @@ void MainWindow::on_updateDisplay_clicked()
 {
     P2StationListEmpty(chosenStations);
     P2TrackListEmpty(chosenTracks);
+    P2LineListEmpty(chosenLines);
     ShowChosenStation();
     ShowChosenTracks();
+    ShowChosenLines();
+}
+
+void MainWindow::on_showLineStation_clicked()
+{
+    if(!chosenLines)
+    {
+        return;
+    }
+    else{
+        QString str;
+        P2TrackNode* p = chosenLines->p2Line->inLineTrack;
+        while(p)
+        {
+            str+= p->p2Track->s1->name + "--" + QString::number(p->p2Track->weight, 10).toUpper() + "--" + p->p2Track->s2->name + "\n";
+            p = p->next;
+        }
+        ui->displayLabel3->setText(str);
+    }
+    P2LineListEmpty(chosenLines);
+}
+
+void MainWindow::on_getMinestTimePath_clicked()
+{
+    P2StationNode* p = chosenStations;
+    if(!p || !p->next)
+    {
+        ui->displayLabelHints->setText("未选中足够的站点!");
+        return;
+    }
+    return;
 }

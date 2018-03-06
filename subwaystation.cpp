@@ -881,17 +881,31 @@ state InitMap(SubwaySystem &subwaySystem, Map &map)
 {
     map.vertexNum = subwaySystem.stationNum;
     map.edgeNum = subwaySystem.edgeNum;
-    map.matrix = new int*[map.vertexNum]{NULL};
-    map.dist = new int*[map.vertexNum]{NULL};
-    map.path = new int*[map.vertexNum]{NULL};
-    map.vertexTable = new Station*[map.vertexNum]{NULL};
+    map.matrix = new int*[map.vertexNum];
+    map.matrix_transfer = new int*[map.vertexNum];
+    map.dist = new int*[map.vertexNum];
+    map.path = new int*[map.vertexNum];
+    map.vertexTable = new Station*[map.vertexNum];
     StationNode* p = subwaySystem.stationList;
     for(int i = 0; i < map.vertexNum; i++)
     {
-        map.matrix[i] = new int[map.vertexNum]{0};
-        map.dist[i] = new int[map.vertexNum]{0};
-        map.path[i] = new int[map.vertexNum]{0};
+        map.matrix[i] = new int[map.vertexNum];
+        map.matrix_transfer[i] = new int[map.vertexNum];
+        map.dist[i] = new int[map.vertexNum];
+        map.path[i] = new int[map.vertexNum];
         map.vertexTable[i] = p;
+        for(int j = 0; j < map.vertexNum; j++)
+        {
+            if(i == j)
+            {
+                map.matrix[i][j] = 0;
+                map.matrix_transfer[i][j] = 0;
+            }
+            else{
+                map.matrix[i][j] = INF;
+                map.matrix_transfer[i][j] = INF;
+            }
+        }
         p = p->next;
     }
     TrackNode* q = subwaySystem.trackList;
@@ -902,6 +916,23 @@ state InitMap(SubwaySystem &subwaySystem, Map &map)
         j = FindPosInVertexTable(q->s2, map);
         map.matrix[i][j] = map.matrix[j][i] = q->weight;
         q=q->next;
+    }
+    LineNode* ptr = subwaySystem.lineList;
+    while(ptr)
+    {
+        P2StationNode* ptr_1 = ptr->inLineStations;
+        //qDebug() << ptr->name;
+        while(ptr_1 && ptr_1->next)
+        {
+            int i,j;
+            //qDebug() << ptr_1->p2Station->name;
+            //qDebug() << ptr_1->next->p2Station->name;
+            i = FindPosInVertexTable(ptr_1->p2Station, map);
+            j = FindPosInVertexTable(ptr_1->next->p2Station, map);
+            map.matrix_transfer[i][j] = map.matrix_transfer[j][i] = 1;
+            ptr_1 = ptr_1->next;
+        }
+        ptr = ptr->next;
     }
     return OK;
 }
@@ -924,13 +955,124 @@ state DestroyMap(Map &map)
     for(int i = 0; i < map.vertexNum; i++)
     {
         delete[] map.matrix[i];
+        delete[] map.matrix_transfer[i];
         delete[] map.dist[i];
         delete[] map.path[i];
     }
     delete[] map.matrix;
+    delete[] map.matrix_transfer;
     delete[] map.dist;
     delete[] map.path;
     delete[] map.vertexTable;
     map.edgeNum = map.vertexNum = 0;
     return OK;
+}
+
+void ShowMap(Map map)
+{
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        QString str;
+        for(int j = 0; j < map.vertexNum; j++)
+        {
+            str += QString::number(map.matrix[i][j], 10).toUpper();
+            str += " ";
+        }
+        qDebug() << str;
+    }
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        QString str;
+        for(int j = 0; j < map.vertexNum; j++)
+        {
+            str += QString::number(map.matrix_transfer[i][j], 10).toUpper();
+            str += " ";
+        }
+        qDebug() << str;
+    }
+    return;
+}
+
+void Floyd_time(Map map)
+{
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        for(int j = 0; j < map.vertexNum; j++)
+        {
+            map.dist[i][j] = map.matrix[i][j];
+            map.path[i][j] = -1;
+        }
+    }
+    for(int k = 0; k < map.vertexNum; k++)
+    {
+        for(int i = 0; i < map.vertexNum; i++)
+        {
+            for(int j = 0; j < map.vertexNum; j++)
+            {
+                if(map.dist[i][j] > map.dist[i][k] + map.dist[k][j])
+                {
+                    map.dist[i][j] = map.dist[i][k] + map.dist[k][j];
+                    map.path[i][j] = k;
+                }
+            }
+        }
+    }
+    return;
+}
+
+void DisplayPath(Map map, Station* station1, Station* station2, P2StationList &path)
+{
+    int s1,s2;
+    s1 = FindPosInVertexTable(station1, map);
+    s2 = FindPosInVertexTable(station2, map);
+    if(map.dist[s1][s2] == INF)
+    {
+        if(s1 != s2)
+        {
+            //outputBufa = "自" + station1->name + "无法到达" + station2->name;
+            path = NULL;
+            return;
+        }
+    }
+    PassStation(map, path, s1, s2);
+    return;
+}
+
+void Floyd_transfer(Map map)
+{
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        for(int j = 0; j < map.vertexNum; j++)
+        {
+            map.dist[i][j] = map.matrix_transfer[i][j];
+            map.path[i][j] = -1;
+        }
+    }
+    for(int k = 0; k < map.vertexNum; k++)
+    {
+        for(int i = 0; i < map.vertexNum; i++)
+        {
+            for(int j = 0; j < map.vertexNum; j++)
+            {
+                if(map.dist[i][j] > map.dist[i][k] + map.dist[k][j])
+                {
+                    map.dist[i][j] = map.dist[i][k] + map.dist[k][j];
+                    map.path[i][j] = k;
+                }
+            }
+        }
+    }
+    return;
+}
+
+void PassStation(Map map, P2StationList &list, int i, int j)
+{
+    int k = map.path[i][j];
+    if(k == -1)
+    {
+        return;
+    }
+    PassStation(map, list, i, k);
+    P2StationListAppend(list, map.vertexTable[k]);
+    PassStation(map, list, k, j);
 }

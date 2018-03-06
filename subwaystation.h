@@ -8,11 +8,8 @@
 #include "QTextStream"
 #include "QStringList"
 #include "QDebug"
-//#include "stdio.h"
-#include "stdlib.h"
-#include "malloc/malloc.h"
 
-#define INF 10000
+#define INF 32767
 #define OK 1
 #define FAIL 0
 #define ERROR -1
@@ -185,6 +182,7 @@ struct Map
     int vertexNum;
     int edgeNum;
     int** matrix;
+    int** matrix_transfer;
     int** dist;
     int** path;
     Station** vertexTable;
@@ -243,4 +241,9 @@ state InitMap(SubwaySystem &subwaySystem, Map &map);
 int FindPosInVertexTable(Station* station, Map map);
 state DestroyMap(Map &map);
 
+void ShowMap(Map map);
+void Floyd_time(Map map);
+void Floyd_transfer(Map map);
+void DisplayPath(Map map, Station *station1, Station *station2, P2StationList &path);
+void PassStation(Map map, P2StationList &list, int i, int j);
 #endif // SUBWAYSTATION_H

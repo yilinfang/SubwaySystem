@@ -91,6 +91,7 @@ private:
     P2StationList chosenStations;
     //QList<Track*> chosenTracks;
     P2TrackList chosenTracks;
+    P2LineList chosenLines;
     void ShowStation(Station* station);
     void ShowTrack(Track* track);
     Station* IsStationAround(QPoint pos);
@@ -102,6 +103,7 @@ private:
     // QWidget interface
     void ShowChosenStation();
     void ShowChosenTracks();
+    void ShowChosenLines();
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -112,6 +114,8 @@ private slots:
     void on_saveFile_clicked();
     void on_loadFile_clicked();
     void on_updateDisplay_clicked();
+    void on_showLineStation_clicked();
+    void on_getMinestTimePath_clicked();
 };
 
 state PointListInit(PointList &pointList);
