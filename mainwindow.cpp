@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->displayLabel1->setAlignment(Qt::AlignTop);
     ui->displayLabel2->setAlignment(Qt::AlignTop);
     ui->displayLabel3->setAlignment(Qt::AlignTop);
+    ui->groupBoxMap->hide();
     //ui->horizontalLayout->setSizeConstraint(QLayout::SetFixedSize);
     points2Draw = NULL;
     drawedPoints = NULL;
@@ -308,6 +309,75 @@ void MainWindow::ShowChosenLines()
     }
 }
 
+void MainWindow::ShowPath_minestTime(P2StationList path)
+{
+    if(!path)
+    {
+        ui->displayLabelHints->setText("不存在路径!");
+        return;
+    }
+    else
+    {
+        PointListEmpty(points2Draw);
+        DLineListEmpty(drawedTracks);
+        PointList pList = NULL;
+        DLineList dList = NULL;
+        SetPointColor(subwaySystem.stationList, Qt::black, pList);
+        //SetLineColor(subwaySystem.stationList, Qt::yellow, dList);
+        //SetDLineColor(subwaySystem.stationList, Qt::yellow, dList);
+        P2StationNode* p = path;
+//        QString str1;
+//        while(p && p->next)
+//        {
+
+//            str += p->p2Station->name;
+//        }
+    }
+}
+
+void MainWindow::LoadAdmins()
+{
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QFile file(str);
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QTextStream stream(&file);
+        QString line;
+        while(!stream.atEnd() && adminsNum < MAX_ADMIN_NUM)
+        {
+            line = stream.readLine();
+            if(line.startsWith("#", Qt::CaseSensitive))
+            {
+                continue;
+            }
+            if(line.startsWith("@", Qt::CaseSensitive))
+            {
+                admins[adminsNum].username = line;
+                continue;
+            }
+            admins[adminsNum].password = line;
+            adminsNum++;
+        }
+    }
+    file.close();
+}
+
+void MainWindow::SaveAdmins()
+{
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QFile file(str);
+    if(file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+        for(int i = 0; i < adminsNum; i++)
+        {
+            stream << admins[i].username;
+            stream << admins[i].password;
+        }
+    }
+    file.close();
+}
+
 
 void MainWindow::paintEvent(QPaintEvent *event)
 {
@@ -429,12 +499,12 @@ void MainWindow::on_pushButton_clicked()
     SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
     //qDebug() << 0;
     PointList pointList = NULL;
-    SetPointColor(subwaySystem.stationList, Qt::red, pointList);
+    SetPointColor(subwaySystem.stationList, Qt::black, pointList);
     //qDebug() << pointList;
     PointListAppendList(points2Draw, pointList);
     PointListDestroy(pointList);
     DLineList dLineList = NULL;
-    SetLineColor(subwaySystem.trackList, Qt::blue, dLineList);
+    SetLineColor(subwaySystem.trackList, Qt::yellow, dLineList);
     DLineListAppendList(lines2Draw, dLineList);
     DLineListDestroy(dLineList);
     InitMap(subwaySystem, map);
@@ -698,4 +768,36 @@ void MainWindow::on_getMinestTimePath_clicked()
         return;
     }
     return;
+}
+
+void MainWindow::on_editMap_clicked()
+{
+    ui->groupBoxMap->show();
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
+    QFile file(str);
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QTextStream stream(&file);
+        QString text = stream.readAll();
+        ui->textEditMap->setText(text);
+    }
+    file.close();
+}
+
+void MainWindow::on_confirmMap_clicked()
+{
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data1.dat";
+    QFile file(str);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+        stream << ui->textEditMap->toPlainText();
+    }
+    file.close();
+    ui->groupBoxMap->hide();
+}
+
+void MainWindow::on_cancelMap_clicked()
+{
+    ui->groupBoxMap->hide();
 }

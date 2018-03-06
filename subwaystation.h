@@ -244,6 +244,7 @@ state DestroyMap(Map &map);
 void ShowMap(Map map);
 void Floyd_time(Map map);
 void Floyd_transfer(Map map);
-void DisplayPath(Map map, Station *station1, Station *station2, P2StationList &path);
+int DisplayPath(Map map, Station *station1, Station *station2, P2StationList &path);
 void PassStation(Map map, P2StationList &list, int i, int j);
+void TransferLine(P2StationList path, P2LineList &lineList, P2StationList &stationList);
 #endif // SUBWAYSTATION_H

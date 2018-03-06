@@ -20,123 +20,353 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="horizontalLayoutWidget">
+   <widget class="QGroupBox" name="groupBoxMap">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>520</y>
+      <y>10</y>
       <width>651</width>
-      <height>211</height>
+      <height>601</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="displayLabel1">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="displayLabel2">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="displayLabel3">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <property name="title">
+     <string>线路图编辑窗口</string>
+    </property>
+    <widget class="QPushButton" name="cancelMap">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>540</y>
+       <width>113</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>取消</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="textEditMap">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>631</width>
+       <height>501</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="confirmMap">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>540</y>
+       <width>113</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>确定</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QWidget" name="verticalLayoutWidget">
+   <widget class="QPushButton" name="editMap">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>10</y>
-      <width>160</width>
-      <height>721</height>
+      <x>870</x>
+      <y>240</y>
+      <width>151</width>
+      <height>51</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QPushButton" name="getMinestTimePath">
-       <property name="text">
-        <string>输出用时最短路径</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="showLineStation">
-       <property name="text">
-        <string>输出选中线路信息</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>刷新显示</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="saveFile">
-       <property name="text">
-        <string>保存文件</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="updateDisplay">
-       <property name="text">
-        <string>刷新选中列表</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadFile">
-       <property name="text">
-        <string>加载文件</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <property name="text">
+     <string>编辑线路</string>
+    </property>
    </widget>
-   <widget class="QWidget" name="verticalLayoutWidget_2">
+   <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>10</y>
-      <width>160</width>
-      <height>721</height>
+      <x>700</x>
+      <y>130</y>
+      <width>60</width>
+      <height>16</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QLabel" name="displayLabelHints">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="inputLine1"/>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="inputLine2"/>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="inputLine3"/>
-     </item>
-    </layout>
+    <property name="text">
+     <string>输入框1</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>180</y>
+      <width>60</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>输入框2</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loadFile_2">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>150</y>
+      <width>91</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>登陆</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loginButton_2">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>430</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>管理管理员账户</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loginButton_3">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>500</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>修改站点名称</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loginButton_4">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>630</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>修改线路名称</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loginButton_5">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>690</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>修改边的权值</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="showLineStation_2">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>300</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>输出所有线路信息</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="getMinestTimePath_2">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>430</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>输出换乘最少路径</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loginButton_6">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>570</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>修改站点位置</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="inputLine3">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>200</y>
+      <width>211</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="displayLabelHints">
+    <property name="geometry">
+     <rect>
+      <x>685</x>
+      <y>11</y>
+      <width>311</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="inputLine2">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>150</y>
+      <width>211</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="loginButton">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>360</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>加载文件</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>570</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>刷新显示</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="getMinestTimePath">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>360</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>输出用时最短路径</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="updateDisplay">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>500</y>
+      <width>151</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>刷新选中列表</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="showLineStation">
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>240</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>输出选中线路信息</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveFile">
+    <property name="geometry">
+     <rect>
+      <x>870</x>
+      <y>300</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>保存文件</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="displayLabel2">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>629</y>
+      <width>211</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="displayLabel3">
+    <property name="geometry">
+     <rect>
+      <x>449</x>
+      <y>629</y>
+      <width>211</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="displayLabel1">
+    <property name="geometry">
+     <rect>
+      <x>11</x>
+      <y>629</y>
+      <width>211</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

@@ -22,7 +22,11 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
     {
         line = stream.readLine();
         qDebug() << line;
-        if(line.startsWith("#", Qt::CaseSensitive)) //读取到线路信息
+        if(line.startsWith("#")) //读取到注释
+        {
+            continue;
+        }
+        if(line.startsWith("@", Qt::CaseSensitive)) //读取到线路信息
         {
             //subwaySystem.lineTable.append(tempLine);
 //            qDebug() << subwaySystem.lineList.length << subwaySystem.lineList.size;
@@ -1020,7 +1024,7 @@ void Floyd_time(Map map)
     return;
 }
 
-void DisplayPath(Map map, Station* station1, Station* station2, P2StationList &path)
+int DisplayPath(Map map, Station* station1, Station* station2, P2StationList &path)
 {
     int s1,s2;
     s1 = FindPosInVertexTable(station1, map);
@@ -1031,11 +1035,11 @@ void DisplayPath(Map map, Station* station1, Station* station2, P2StationList &p
         {
             //outputBufa = "自" + station1->name + "无法到达" + station2->name;
             path = NULL;
-            return;
+            return INF;
         }
     }
     PassStation(map, path, s1, s2);
-    return;
+    return map.dist[s1][s2];
 }
 
 void Floyd_transfer(Map map)
@@ -1075,4 +1079,24 @@ void PassStation(Map map, P2StationList &list, int i, int j)
     PassStation(map, list, i, k);
     P2StationListAppend(list, map.vertexTable[k]);
     PassStation(map, list, k, j);
+}
+
+void TransferLine(P2StationList path, P2LineList &lineList, P2StationList &stationList)
+{
+    P2StationNode* pathEnd = path;
+    Line* formerLine = NULL;
+    while(pathEnd->next)
+    {
+        if(!formerLine && !pathEnd->p2Station->transferLines->next)
+        {
+            //formerLine = pathEnd->p2Station->transferLines;
+            //P2LineListAppend(lineList, formerLine);
+            //P2StationListAppend(stationList, pathEnd);
+        }
+        pathEnd = pathEnd->next;
+    }
+    if(formerLine)
+    {
+
+    }
 }

@@ -8,12 +8,20 @@
 #include "QColor"
 #include "QDebug"
 
+#define MAX_ADMIN_NUM 5
+
 typedef struct Point Point;
 typedef Point PointNode;
 typedef struct DLine DLine;
 typedef DLine DLineNode;
 typedef PointNode*  PointList;
 typedef DLineNode* DLineList;
+typedef struct Admin Admin;
+
+struct Admin{
+    QString username;
+    QString password;
+};
 
 struct Point{
     Station* station;
@@ -75,6 +83,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    Admin admins[MAX_ADMIN_NUM];
+    int adminsNum;
     QString fileName;
     SubwaySystem subwaySystem;
     Map map;
@@ -104,6 +114,10 @@ private:
     void ShowChosenStation();
     void ShowChosenTracks();
     void ShowChosenLines();
+    void ShowPath_minestTime(P2StationList path);
+    void ShowPath_minestTransfer();
+    void LoadAdmins();
+    void SaveAdmins();
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -116,6 +130,9 @@ private slots:
     void on_updateDisplay_clicked();
     void on_showLineStation_clicked();
     void on_getMinestTimePath_clicked();
+    void on_editMap_clicked();
+    void on_confirmMap_clicked();
+    void on_cancelMap_clicked();
 };
 
 state PointListInit(PointList &pointList);
