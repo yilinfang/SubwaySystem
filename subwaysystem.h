@@ -9,7 +9,7 @@
 #include "QStringList"
 #include "QDebug"
 
-#define INF 32767
+#define INF 10000
 #define OK 1
 #define FAIL 0
 #define ERROR -1
@@ -245,6 +245,5 @@ void ShowMap(Map map);
 void Floyd_time(Map map);
 void Floyd_transfer(Map map);
 int DisplayPath(Map map, Station *station1, Station *station2, P2StationList &path);
-void PassStation(Map map, P2StationList &list, int i, int j);
-void TransferLine(P2StationList path, P2LineList &lineList, P2StationList &stationList);
+void TransferLine(Station *station1, Station *station2, P2LineList &list);
 #endif // SUBWAYSTATION_H

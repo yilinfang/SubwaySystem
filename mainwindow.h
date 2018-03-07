@@ -116,8 +116,6 @@ private:
     void ShowChosenStation();
     void ShowChosenTracks();
     void ShowChosenLines();
-    void ShowPath_minestTime(P2StationList path);
-    void ShowPath_minestTransfer();
     void LoadAdmins();
     void SaveAdmins();
 protected:
@@ -144,6 +142,7 @@ private slots:
     void on_editStationPos_clicked();
     void on_editLineName_clicked();
     void on_editTrackWeight_clicked();
+    void on_getMinestTransferPath_clicked();
 };
 
 state PointListInit(PointList &pointList);

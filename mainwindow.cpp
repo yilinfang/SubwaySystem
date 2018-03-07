@@ -270,7 +270,7 @@ void MainWindow::ShowChosenStation()
     {
         //ui->displayLabel2->adjustSize();
         //ui->displayLabel2->setAlignment(Qt::AlignTop);
-        //ui->displayLabel2->setText("未选中任何站点!");
+        ui->displayLabel2->setText("");
     }
     else{
         //ui->displayLabel2->setWordWrap(true);
@@ -328,31 +328,6 @@ void MainWindow::ShowChosenLines()
     }
 }
 
-void MainWindow::ShowPath_minestTime(P2StationList path)
-{
-    if(!path)
-    {
-            //ui->displayLabelHints->setText("不存在路径!");
-        return;
-    }
-    else
-    {
-        PointListEmpty(points2Draw);
-        DLineListEmpty(drawedTracks);
-        PointList pList = NULL;
-        DLineList dList = NULL;
-        SetPointColor(subwaySystem.stationList, Qt::black, pList);
-        //SetLineColor(subwaySystem.stationList, Qt::yellow, dList);
-        //SetDLineColor(subwaySystem.stationList, Qt::yellow, dList);
-        P2StationNode* p = path;
-//        QString str1;
-//        while(p && p->next)
-//        {
-
-//            str += p->p2Station->name;
-//        }
-    }
-}
 
 void MainWindow::LoadAdmins()
 {
@@ -842,8 +817,35 @@ void MainWindow::on_getMinestTimePath_clicked()
     P2StationNode* p = chosenStations;
     if(!p || !p->next)
     {
-        //ui->displayLabelHints->setText("未选中足够的站点!");
+        ui->outputTextEdit->setText("未选中足够的站点!");
         return;
+    }
+    else{
+        DestroyMap(map);
+        InitMap(subwaySystem, map);
+        //ShowMap(map);
+        Floyd_time(map);
+        P2StationList path = NULL;
+        int time = DisplayPath(map, p->p2Station, p->next->p2Station, path);
+        ui->outputTextEdit->setText(QString::number(time, 10));
+        P2StationNode* q = path;
+        Point point;
+        point.color = Qt::blue;
+        point.station = p->p2Station;
+        point.next = NULL;
+        PointListAppend(points2Draw, point);
+        point.station = p->next->p2Station;
+        PointListAppend(points2Draw, point);
+        while(q)
+        {
+            point.color = Qt::red;
+            point.station = q->p2Station;
+            PointListAppend(points2Draw, point);
+            q = q->next;
+        }
+        P2StationListDestroy(path);
+        ui->outputTextEdit->setText("最短所需时间为" + QString::number(time, 10));
+        QWidget::update();
     }
     return;
 }
@@ -1071,4 +1073,63 @@ void MainWindow::on_editTrackWeight_clicked()
     //ui->outputTextEdit->setText();
     ui->inputLine1->clear();
     ui->inputLine2->clear();
+}
+
+void MainWindow::on_getMinestTransferPath_clicked()
+{
+    P2StationNode* p = chosenStations;
+    if(!p || !p->next)
+    {
+        ui->outputTextEdit->setText("未选中足够的站点!");
+        return;
+    }
+    else{
+        DestroyMap(map);
+        InitMap(subwaySystem, map);
+        //ShowMap(map);
+        Floyd_transfer(map);
+        P2StationList path = NULL;
+        DisplayPath(map, p->p2Station, p->next->p2Station, path);
+        //ui->outputTextEdit->setText(QString::number(time, 10));
+        P2StationNode* q = path;
+        Point point;
+        point.color = Qt::blue;
+        point.station = p->p2Station;
+        point.next = NULL;
+        PointListAppend(points2Draw, point);
+        point.station = p->next->p2Station;
+        PointListAppend(points2Draw, point);
+        while(q)
+        {
+            point.color = Qt::red;
+            point.station = q->p2Station;
+            PointListAppend(points2Draw, point);
+            q = q->next;
+        }
+        P2StationListAppend(path, p->next->p2Station);
+        P2StationList q2 = path;
+        Station* q1 = p->p2Station;
+        P2LineList list = NULL;
+        QString str;
+        while(q2)
+        {
+            TransferLine(q1, q2->p2Station, list);
+            P2LineNode* ptr = list;
+            str += "在" + q1->name + "搭乘";
+            while(ptr)
+            {
+                str += " " + ptr->p2Line->name + " ";
+                ptr = ptr->next;
+            }
+            str += "至" + q2->p2Station->name + "\n";
+            q1 = q2->p2Station;
+            q2 = q2->next;
+            P2LineListEmpty(list);
+        }
+
+        ui->outputTextEdit->setText(str);
+        P2StationListDestroy(path);
+        QWidget::update();
+    }
+    return;
 }

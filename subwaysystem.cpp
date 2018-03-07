@@ -917,31 +917,45 @@ state InitMap(SubwaySystem &subwaySystem, Map &map)
         p = p->next;
     }
     TrackNode* q = subwaySystem.trackList;
+    int n = 0;
     while(q)
     {
         int i,j;
         i = FindPosInVertexTable(q->s1, map);
         j = FindPosInVertexTable(q->s2, map);
-        map.matrix[i][j] = map.matrix[j][i] = q->weight;
-        q=q->next;
+        qDebug() << i;
+        qDebug() << j;
+        qDebug() << q->weight;
+        //qDebug() << q->s1->name + QString::number(q->weight, 10) + q->s2->name;
+        map.matrix[i][j] = q->weight;
+        map.matrix[j][i] = q->weight;
+        q = q->next;
+        n++;
     }
+    //qDebug() << n;
     LineNode* ptr = subwaySystem.lineList;
     while(ptr)
     {
         P2StationNode* ptr_1 = ptr->inLineStations;
-        //qDebug() << ptr->name;
-        while(ptr_1 && ptr_1->next)
+        qDebug() << ptr->name;
+        QString str;
+        while(ptr_1)
         {
-            int i,j;
-            //qDebug() << ptr_1->p2Station->name;
-            //qDebug() << ptr_1->next->p2Station->name;
-            i = FindPosInVertexTable(ptr_1->p2Station, map);
-            j = FindPosInVertexTable(ptr_1->next->p2Station, map);
-            map.matrix_transfer[i][j] = map.matrix_transfer[j][i] = 1;
-            ptr_1 = ptr_1->next;
+            P2StationNode* ptr_2 = ptr_1->next;
+            while(ptr_2)
+            {
+                int i, j;
+                i = FindPosInVertexTable(ptr_1->p2Station, map);
+                j = FindPosInVertexTable(ptr_2->p2Station, map);
+                map.matrix_transfer[i][j] = map.matrix_transfer[j][i] = 1;
+                ptr_2 = ptr_2->next;
+            }
+            ptr_1=ptr_1->next;
         }
+        qDebug() << str;
         ptr = ptr->next;
     }
+    ShowMap(map);
     return OK;
 }
 
@@ -952,7 +966,6 @@ int FindPosInVertexTable(Station *station, Map map)
         if(map.vertexTable[i] == station)
         {
             return i;
-            break;
         }
     }
     return -1;
@@ -992,16 +1005,16 @@ void ShowMap(Map map)
         }
         qDebug() << str;
     }
-    for(int i = 0; i < map.vertexNum; i++)
-    {
-        QString str;
-        for(int j = 0; j < map.vertexNum; j++)
-        {
-            str += QString::number(map.matrix_transfer[i][j], 10).toUpper();
-            str += " ";
-        }
-        qDebug() << str;
-    }
+//    for(int i = 0; i < map.vertexNum; i++)
+//    {
+//        QString str;
+//        for(int j = 0; j < map.vertexNum; j++)
+//        {
+//            str += QString::number(map.matrix_transfer[i][j], 10).toUpper();
+//            str += " ";
+//        }
+//        qDebug() << str;
+//    }
     return;
 }
 
@@ -1012,7 +1025,13 @@ void Floyd_time(Map map)
         for(int j = 0; j < map.vertexNum; j++)
         {
             map.dist[i][j] = map.matrix[i][j];
-            map.path[i][j] = -1;
+            if(map.matrix[i][j] == INF)
+            {
+                map.path[i][j] = -1;
+            }
+            else{
+                map.path[i][j] = j;
+            }
         }
     }
     for(int k = 0; k < map.vertexNum; k++)
@@ -1024,7 +1043,7 @@ void Floyd_time(Map map)
                 if(map.dist[i][j] > map.dist[i][k] + map.dist[k][j])
                 {
                     map.dist[i][j] = map.dist[i][k] + map.dist[k][j];
-                    map.path[i][j] = k;
+                    map.path[i][j] = map.path[i][k];
                 }
             }
         }
@@ -1037,17 +1056,21 @@ int DisplayPath(Map map, Station* station1, Station* station2, P2StationList &pa
     int s1,s2;
     s1 = FindPosInVertexTable(station1, map);
     s2 = FindPosInVertexTable(station2, map);
-    if(map.dist[s1][s2] == INF)
+    int k = map.path[s1][s2];
+    if(k == -1)
     {
-        if(s1 != s2)
-        {
-            //outputBufa = "自" + station1->name + "无法到达" + station2->name;
-            path = NULL;
-            return INF;
-        }
+        path = NULL;
+        return map.dist[s1][s2];
     }
-    PassStation(map, path, s1, s2);
-    return map.dist[s1][s2];
+    else
+    {
+        while(k != s2)
+        {
+            P2StationListAppend(path, map.vertexTable[k]);
+            k = map.path[k][s2];
+        }
+        return map.dist[s1][s2];
+    }
 }
 
 void Floyd_transfer(Map map)
@@ -1057,7 +1080,13 @@ void Floyd_transfer(Map map)
         for(int j = 0; j < map.vertexNum; j++)
         {
             map.dist[i][j] = map.matrix_transfer[i][j];
-            map.path[i][j] = -1;
+            if(map.matrix_transfer[i][j] == INF)
+            {
+                map.path[i][j] = -1;
+            }
+            else{
+                map.path[i][j] = j;
+            }
         }
     }
     for(int k = 0; k < map.vertexNum; k++)
@@ -1069,7 +1098,7 @@ void Floyd_transfer(Map map)
                 if(map.dist[i][j] > map.dist[i][k] + map.dist[k][j])
                 {
                     map.dist[i][j] = map.dist[i][k] + map.dist[k][j];
-                    map.path[i][j] = k;
+                    map.path[i][j] = map.path[i][k];
                 }
             }
         }
@@ -1077,34 +1106,30 @@ void Floyd_transfer(Map map)
     return;
 }
 
-void PassStation(Map map, P2StationList &list, int i, int j)
+void TransferLine(Station *station1, Station *station2, P2LineList &list)
 {
-    int k = map.path[i][j];
-    if(k == -1)
+    if(!station1->transferLines->next)
     {
+        P2LineListAppend(list, station1->transferLines->p2Line);
         return;
     }
-    PassStation(map, list, i, k);
-    P2StationListAppend(list, map.vertexTable[k]);
-    PassStation(map, list, k, j);
-}
-
-void TransferLine(P2StationList path, P2LineList &lineList, P2StationList &stationList)
-{
-    P2StationNode* pathEnd = path;
-    Line* formerLine = NULL;
-    while(pathEnd->next)
+    if(!station2->transferLines->next)
     {
-        if(!formerLine && !pathEnd->p2Station->transferLines->next)
-        {
-            //formerLine = pathEnd->p2Station->transferLines;
-            //P2LineListAppend(lineList, formerLine);
-            //P2StationListAppend(stationList, pathEnd);
-        }
-        pathEnd = pathEnd->next;
+        P2LineListAppend(list, station2->transferLines->p2Line);
+        return;
     }
-    if(formerLine)
+    P2LineNode* p1 = station1->transferLines;
+    while(p1)
     {
-
+        P2LineNode* p2 = station2->transferLines;
+        while(p2)
+        {
+            if(p1->p2Line == p2->p2Line)
+            {
+                P2LineListAppend(list, p1->p2Line);
+            }
+            p2 = p2->next;
+        }
+        p1 = p1->next;
     }
 }
