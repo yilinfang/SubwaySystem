@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "subwaystation.h"
+#include "subwaysystem.h"
 
 
 
@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->displayLabel2->setAlignment(Qt::AlignTop);
     ui->displayLabel3->setAlignment(Qt::AlignTop);
     ui->groupBoxMap->hide();
+    ui->groupBoxAdmins->hide();
+    ui->groupBoxAdminTools->hide();
+    LoadAdmins();
     //ui->horizontalLayout->setSizeConstraint(QLayout::SetFixedSize);
     points2Draw = NULL;
     drawedPoints = NULL;
@@ -37,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     SubwaySystemDestroy(subwaySystem);
-    DestroyMap(map);
+    //DestroyMap(map);
     PointListDestroy(points2Draw);
     PointListDestroy(drawedPoints);
     DLineListDestroy(lines2Draw);
@@ -313,7 +316,7 @@ void MainWindow::ShowPath_minestTime(P2StationList path)
 {
     if(!path)
     {
-        ui->displayLabelHints->setText("不存在路径!");
+            //ui->displayLabelHints->setText("不存在路径!");
         return;
     }
     else
@@ -343,6 +346,7 @@ void MainWindow::LoadAdmins()
     {
         QTextStream stream(&file);
         QString line;
+        adminsNum = 0;
         while(!stream.atEnd() && adminsNum < MAX_ADMIN_NUM)
         {
             line = stream.readLine();
@@ -536,6 +540,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             return;
         }
     }
+    QString message ="(" + QString::number(pos.x(), 10) + "," + QString::number(pos.y(), 10) + ")";
+    ui->statusBar->showMessage(message);
     qDebug() << pos.x() << pos.y() << "Hover";
 }
 
@@ -764,7 +770,7 @@ void MainWindow::on_getMinestTimePath_clicked()
     P2StationNode* p = chosenStations;
     if(!p || !p->next)
     {
-        ui->displayLabelHints->setText("未选中足够的站点!");
+        //ui->displayLabelHints->setText("未选中足够的站点!");
         return;
     }
     return;
@@ -800,4 +806,79 @@ void MainWindow::on_confirmMap_clicked()
 void MainWindow::on_cancelMap_clicked()
 {
     ui->groupBoxMap->hide();
+}
+
+void MainWindow::on_editAdmins_clicked()
+{
+    ui->groupBoxAdmins->show();
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QFile file(str);
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QTextStream stream(&file);
+        QString text = stream.readAll();
+        ui->textEditAdmins->setText(text);
+    }
+    file.close();
+}
+
+void MainWindow::on_cancelAdmins_clicked()
+{
+    ui->groupBoxAdmins->hide();
+}
+
+void MainWindow::on_confirmAdmins_clicked()
+{
+    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QFile file(str);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+        stream << ui->textEditAdmins->toPlainText();
+    }
+    file.close();
+    ui->groupBoxAdmins->hide();
+    ui->outputTextEdit->setText("新的管理员账户将在软件重启后投入使用。");
+}
+
+void MainWindow::on_showAllLineStation_clicked()
+{
+    QString str;
+    if(!subwaySystem.lineList)
+    {
+        str = "不存在任何线路";
+    }
+    else{
+
+    }
+}
+
+void MainWindow::on_login_clicked()
+{
+    //int signal = 0;
+    if(ui->inputLine1->text() == "" || ui->inputLine2->text() == "")
+    {
+        ui->outputTextEdit->setText("请在输入框1输入账号,输入框2中输入密码后，再次点击登录按钮。");
+        return;
+    }
+    else
+    {
+        for(int i = 0; i < adminsNum; i++)
+        {
+            QString username = "@" + ui->inputLine1->text();
+            QString password = ui->inputLine2->text();
+            if(admins[i].username == username && admins[i].password == password)
+            {
+                ui->outputTextEdit->setText("欢迎回来！" + ui->inputLine1->text());
+                ui->inputLine1->clear();
+                ui->inputLine2->clear();
+                ui->groupBoxAdminTools->show();
+                return;
+            }
+        }
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        ui->outputTextEdit->setText("账号或密码错误!");
+    }
+
 }

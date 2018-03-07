@@ -26,11 +26,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    subwaystation.cpp
+    subwaysystem.cpp
 
 HEADERS += \
         mainwindow.h \
-    subwaystation.h
+    subwaysystem.h
 
 FORMS += \
         mainwindow.ui

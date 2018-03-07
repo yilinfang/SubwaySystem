@@ -1,4 +1,4 @@
-#include "subwaystation.h"
+#include "subwaysystem.h"
 
 state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &outputBufa)
 {

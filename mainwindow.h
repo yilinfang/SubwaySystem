@@ -3,7 +3,7 @@
 
 #include "QMainWindow"
 #include "QPainter"
-#include "subwaystation.h"
+#include "subwaysystem.h"
 #include "QFont"
 #include "QColor"
 #include "QDebug"
@@ -133,6 +133,11 @@ private slots:
     void on_editMap_clicked();
     void on_confirmMap_clicked();
     void on_cancelMap_clicked();
+    void on_editAdmins_clicked();
+    void on_cancelAdmins_clicked();
+    void on_confirmAdmins_clicked();
+    void on_showAllLineStation_clicked();
+    void on_login_clicked();
 };
 
 state PointListInit(PointList &pointList);
