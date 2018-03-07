@@ -141,7 +141,7 @@ Track *MainWindow::IsTrackAround(QPoint pos)
     DLineNode *p = drawedTracks;
     while(p)
     {
-        if((pos.x() - p->track->s1->pos.x()) * (p->track->s2->pos.y() - p->track->s1->pos.y()) == (p->track->s1->pos.x() - p->track->s1->pos.x()) * (pos.y() - p->track->s1->pos.y()))
+        if((pos.x() - p->track->s1->pos.x()) * (p->track->s2->pos.y() - p->track->s1->pos.y())  == (p->track->s1->pos.x() - p->track->s1->pos.x()) * (pos.y() - p->track->s1->pos.y()))
         {
             if((pos.x() - p->track->s1->pos.x()) * (pos.x() - p->track->s2->pos.x()) <= 0 && (pos.y() - p->track->s1->pos.y()) * (pos.y() - p->track->s2->pos.y()) <= 0)
             {
