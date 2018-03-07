@@ -245,6 +245,7 @@ Track* FindOrNewTrack(Station *station1, Station *station2, int weight, Line *p2
         if((p->s1 == station1 && p->s2 == station2) || (p->s1 == station2 && p->s2 == station1))
         {
             P2LineListAppend(p->LineList, p2line);
+            P2TrackListAppend(p2line->inLineTrack, p);
             return p;
         }
         p = p->next;
@@ -854,7 +855,7 @@ state P2TrackListDestroy(P2TrackList &p2TrackList)
     return P2TrackListEmpty(p2TrackList);
 }
 
-state SubwaySystemDestroy(SubwaySystem subwaySystem)
+state SubwaySystemDestroy(SubwaySystem &subwaySystem)
 {
     subwaySystem.edgeNum = subwaySystem.lineNum = subwaySystem.stationNum = 0;
     LineNode* line = subwaySystem.lineList;
@@ -878,6 +879,9 @@ state SubwaySystemDestroy(SubwaySystem subwaySystem)
         track->s1 = track->s2 = NULL;
         track = track->next;
     }
+    subwaySystem.lineList = NULL;
+    subwaySystem.stationList = NULL;
+    subwaySystem.trackList = NULL;
     return OK;
 }
 
@@ -956,6 +960,10 @@ int FindPosInVertexTable(Station *station, Map map)
 
 state DestroyMap(Map &map)
 {
+    if(!map.vertexNum)
+    {
+        return OK;
+    }
     for(int i = 0; i < map.vertexNum; i++)
     {
         delete[] map.matrix[i];

@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->groupBoxMap->hide();
     ui->groupBoxAdmins->hide();
     ui->groupBoxAdminTools->hide();
+    dirPos = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
+    isFirstStart = 1;
     LoadAdmins();
     //ui->horizontalLayout->setSizeConstraint(QLayout::SetFixedSize);
     points2Draw = NULL;
@@ -28,19 +30,28 @@ MainWindow::MainWindow(QWidget *parent) :
     lines2Draw = NULL;
     drawedTracks = NULL;
     chosenLines = NULL;
+    chosenStations = NULL;
+    chosenTracks = NULL;
     subwaySystem.lineList = NULL;
     subwaySystem.trackList = NULL;
     subwaySystem.stationList = NULL;
     subwaySystem.edgeNum = 0;
     subwaySystem.lineNum = 0;
     subwaySystem.stationNum = 0;
+    map.dist = NULL;
+    map.matrix = NULL;
+    map.matrix_transfer = NULL;
+    map.path = NULL;
+    map.vertexTable = NULL;
+    map.edgeNum = 0;
+    map.vertexNum = 0;
     //temp = "qt";
 }
 
 MainWindow::~MainWindow()
 {
     SubwaySystemDestroy(subwaySystem);
-    //DestroyMap(map);
+    DestroyMap(map);
     PointListDestroy(points2Draw);
     PointListDestroy(drawedPoints);
     DLineListDestroy(lines2Draw);
@@ -48,11 +59,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::ShowStation(Station *station)
+void MainWindow::ShowStation(Station *station, QPoint pos)
 {
     QString str;
     str += station->name;
     str += " ";
+    pos.setX(station->pos.x());
+    pos.setY(station->pos.y());
     P2LineNode* p = station->transferLines;
     while(p)
     {
@@ -60,15 +73,15 @@ void MainWindow::ShowStation(Station *station)
         str += " ";
         p = p->next;
     }
-    ui->statusBar->showMessage(str);
+    ui->statusBar->showMessage("(" + QString::number(pos.x(), 10) + "," + QString::number(pos.y(), 10) + ")" + str);
 }
 
-void MainWindow::ShowTrack(Track *track)
+void MainWindow::ShowTrack(Track *track, QPoint pos)
 {
     //ui->displayLabel->clear();
     //QFont font("Microsoft YaHei", 10, 75);
     //ui->displayLabel->setFont(font);
-    ui->statusBar->showMessage(track->s1->name + "---" + track->s2->name);
+    ui->statusBar->showMessage("(" + QString::number(pos.x(), 10) + "," + QString::number(pos.y(), 10) + ")" + track->s1->name + "---" + track->s2->name);
 }
 
 Station *MainWindow::IsStationAround(QPoint pos)
@@ -99,7 +112,7 @@ Station *MainWindow::IsStationAround(QPoint pos)
     while(p)
     {
         long dis = (p->station->pos.x() - pos.x()) * (p->station->pos.x() - pos.x()) + (p->station->pos.y() - pos.y()) * (p->station->pos.y() - pos.y());
-        if(dis <= 4)
+        if(dis <= 16)
         {
             return p->station;
         }
@@ -141,7 +154,10 @@ Track *MainWindow::IsTrackAround(QPoint pos)
     DLineNode *p = drawedTracks;
     while(p)
     {
-        if((pos.x() - p->track->s1->pos.x()) * (p->track->s2->pos.y() - p->track->s1->pos.y())  == (p->track->s1->pos.x() - p->track->s1->pos.x()) * (pos.y() - p->track->s1->pos.y()))
+        int m = (pos.x() - p->track->s1->pos.x()) * (p->track->s2->pos.y() - p->track->s1->pos.y());
+        int n = (p->track->s2->pos.x() - p->track->s1->pos.x()) * (pos.y() - p->track->s1->pos.y());
+        int t = m - n;
+        if(-1000 < t && t < 1000)
         {
             if((pos.x() - p->track->s1->pos.x()) * (pos.x() - p->track->s2->pos.x()) <= 0 && (pos.y() - p->track->s1->pos.y()) * (pos.y() - p->track->s2->pos.y()) <= 0)
             {
@@ -254,7 +270,7 @@ void MainWindow::ShowChosenStation()
     {
         //ui->displayLabel2->adjustSize();
         //ui->displayLabel2->setAlignment(Qt::AlignTop);
-        ui->displayLabel2->setText("未选中任何站点!");
+        //ui->displayLabel2->setText("未选中任何站点!");
     }
     else{
         //ui->displayLabel2->setWordWrap(true);
@@ -275,7 +291,7 @@ void MainWindow::ShowChosenTracks()
     //ui->displayLabel3->setText(track->s1->name + "---" + track->s2->name);
     if(!chosenTracks)
     {
-        ui->displayLabel1->setText("未选中任何边!");
+        ui->displayLabel1->setText("");
     }
     else
     {
@@ -297,7 +313,7 @@ void MainWindow::ShowChosenLines()
 {
     if(!chosenLines)
     {
-        ui->displayLabel3->setText("未选中任何边!");
+        ui->displayLabel3->setText("");
     }
     else{
         QString str;
@@ -340,7 +356,7 @@ void MainWindow::ShowPath_minestTime(P2StationList path)
 
 void MainWindow::LoadAdmins()
 {
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QString str = dirPos + "admins.dat";
     QFile file(str);
     if (file.open(QIODevice::ReadOnly))
     {
@@ -471,6 +487,21 @@ void MainWindow::paintEvent(QPaintEvent *event)
 //        }
 //    }
     //qDebug() << "test";
+    if(!signal)
+    {
+        // 设置画笔颜色
+        painter.setPen(QColor(Qt::red));
+
+        // 设置字体：微软雅黑、点大小50、斜体
+        QFont font;
+        font.setFamily("Microsoft YaHei");
+        font.setPointSize(50);
+        font.setItalic(true);
+        painter.setFont(font);
+
+        // 绘制文本
+        painter.drawText(rect(), Qt::AlignBaseline, "Thank you for using!");
+    }
 }
 
 
@@ -494,26 +525,54 @@ void MainWindow::on_pushButton_clicked()
 //    //lines2draw.append(subwaySystem.tracks);
 //    QWidget::update();
     //QString str = ui->inputLine1->testAttribute
-    fileName = "data.dat";
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
-    QString outputBufa;
-    InitSubwaySystem(str + fileName, subwaySystem, outputBufa);
-    qDebug() << outputBufa;
-    fileName = "data.txt";
-    SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
-    //qDebug() << 0;
-    PointList pointList = NULL;
-    SetPointColor(subwaySystem.stationList, Qt::black, pointList);
-    //qDebug() << pointList;
-    PointListAppendList(points2Draw, pointList);
-    PointListDestroy(pointList);
-    DLineList dLineList = NULL;
-    SetLineColor(subwaySystem.trackList, Qt::yellow, dLineList);
-    DLineListAppendList(lines2Draw, dLineList);
-    DLineListDestroy(dLineList);
-    InitMap(subwaySystem, map);
-    ShowMap(map);
-    //qDebug() << 3;
+//    fileName = "data.dat";
+//    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
+//    QString outputBufa;
+//    InitSubwaySystem(str + fileName, subwaySystem, outputBufa);
+//    qDebug() << outputBufa;
+//    fileName = "data.txt";
+//    SaveSubwaySystem(str + fileName, subwaySystem, outputBufa);
+//    //qDebug() << 0;
+//    PointList pointList = NULL;
+//    SetPointColor(subwaySystem.stationList, Qt::black, pointList);
+//    //qDebug() << pointList;
+//    PointListAppendList(points2Draw, pointList);
+//    PointListDestroy(pointList);
+//    DLineList dLineList = NULL;
+//    SetLineColor(subwaySystem.trackList, Qt::yellow, dLineList);
+//    DLineListAppendList(lines2Draw, dLineList);
+//    DLineListDestroy(dLineList);
+//    InitMap(subwaySystem, map);
+//    ShowMap(map);
+//    //qDebug() << 3;
+//    QWidget::update();
+    if(isFirstStart)
+    {
+        QString outputBufa;
+        InitSubwaySystem(dirPos + "data.dat", subwaySystem, outputBufa);
+        PointList pointList = NULL;
+        SetPointColor(subwaySystem.stationList, Qt::yellow, pointList);
+        PointListAppendList(points2Draw, pointList);
+        PointListDestroy(pointList);
+        DLineList dLineList = NULL;
+        SetLineColor(subwaySystem.trackList, Qt::black, dLineList);
+        DLineListAppendList(lines2Draw, dLineList);
+        DLineListDestroy(dLineList);
+        isFirstStart = 0;
+    }
+    else
+    {
+        PointListEmpty(points2Draw);
+        DLineListEmpty(lines2Draw);
+        PointList pointList = NULL;
+        SetPointColor(subwaySystem.stationList, Qt::yellow, pointList);
+        PointListAppendList(points2Draw, pointList);
+        PointListDestroy(pointList);
+        DLineList dLineList = NULL;
+        SetLineColor(subwaySystem.trackList, Qt::black, dLineList);
+        DLineListAppendList(lines2Draw, dLineList);
+        DLineListDestroy(dLineList);
+    }
     QWidget::update();
 }
 
@@ -527,7 +586,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         Station* ptr = IsStationAround(pos);
         if(ptr)
         {
-            ShowStation(ptr);
+            ShowStation(ptr, pos);
             return;
         }
     }
@@ -536,7 +595,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         Track* ptr = IsTrackAround(pos);
         if(ptr)
         {
-            ShowTrack(ptr);
+            ShowTrack(ptr, pos);
             return;
         }
     }
@@ -579,14 +638,18 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 
 void MainWindow::on_saveFile_clicked()
 {
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.txt";
+    QString str =  dirPos + "data.dat";
     QString outputBufa;
     SaveSubwaySystem(str, subwaySystem, outputBufa);
 }
 
-void MainWindow::on_loadFile_clicked()
+void MainWindow:: on_loadFile_clicked()
 {
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
+    isFirstStart = 0;
+    SubwaySystemDestroy(subwaySystem);
+    DestroyMap(map);
+    qDebug() << "test";
+    QString str = dirPos+ "data.dat";
     QString outputBufa;
     InitSubwaySystem(str, subwaySystem, outputBufa);
 }
@@ -750,6 +813,7 @@ void MainWindow::on_showLineStation_clicked()
 {
     if(!chosenLines)
     {
+        ui->outputTextEdit->setText("未选中任何线路!");
         return;
     }
     else{
@@ -760,7 +824,8 @@ void MainWindow::on_showLineStation_clicked()
             str+= p->p2Track->s1->name + "--" + QString::number(p->p2Track->weight, 10).toUpper() + "--" + p->p2Track->s2->name + "\n";
             p = p->next;
         }
-        ui->displayLabel3->setText(str);
+        ui->outputTextEdit->setText(str);
+        ui->displayLabel3->clear();
     }
     P2LineListEmpty(chosenLines);
 }
@@ -849,8 +914,20 @@ void MainWindow::on_showAllLineStation_clicked()
         str = "不存在任何线路";
     }
     else{
-
+        LineList p = subwaySystem.lineList;
+        while(p)
+        {
+            str += p->name + "\n";
+            P2TrackList q = p->inLineTrack;
+            while(q)
+            {
+                str += q->p2Track->s1->name + "--" + QString::number(q->p2Track->weight) + "--" + q->p2Track->s2->name + "\n";
+                q = q->next;
+            }
+            p=p->next;
+        }
     }
+    ui->outputTextEdit->setText(str);
 }
 
 void MainWindow::on_login_clicked()
@@ -881,4 +958,110 @@ void MainWindow::on_login_clicked()
         ui->outputTextEdit->setText("账号或密码错误!");
     }
 
+}
+
+void MainWindow::on_editStationName_clicked()
+{
+    if(!chosenStations)
+    {
+        ui->outputTextEdit->setText("未选中任何站点。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    if(ui->inputLine1->text() == "")
+    {
+        ui->outputTextEdit->setText("请在输入框1中输入选中的第一个站点的新名字。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    ui->outputTextEdit->setText("站点" + chosenStations->p2Station->name + "已改为" + ui->inputLine1->text());
+    chosenStations->p2Station->name = ui->inputLine1->text();
+    P2StationListEmpty(chosenStations);
+    ShowChosenStation();
+    //ui->outputTextEdit->setText();
+    ui->inputLine1->clear();
+    ui->inputLine2->clear();
+}
+
+void MainWindow::on_editStationPos_clicked()
+{
+    if(!chosenStations)
+    {
+        ui->outputTextEdit->setText("未选中任何站点。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    if(ui->inputLine1->text() == "" || ui->inputLine2->text() == "")
+    {
+        ui->outputTextEdit->setText("请在输入框1中输入选中的第一个站点的横坐标，在输入框2中输入选中的第一个站点的纵坐标，坐标值可参考状态栏输出的光标位置。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    bool ok;
+    int x = ui->inputLine1->text().toInt(&ok, 10);
+    int y = ui->inputLine2->text().toInt(&ok, 10);
+    chosenStations->p2Station->pos.setX(x);
+    chosenStations->p2Station->pos.setY(y);
+    QWidget::update();
+    ui->outputTextEdit->setText("站点" + chosenStations->p2Station->name + "的位置已改为" + "(" + QString::number(x, 10)+","+ QString::number(y, 10) + ")");
+    P2StationListEmpty(chosenStations);
+    ShowChosenStation();
+    ui->inputLine1->clear();
+    ui->inputLine2->clear();
+}
+
+void MainWindow::on_editLineName_clicked()
+{
+    if(!chosenLines)
+    {
+        ui->outputTextEdit->setText("未选中任何线路。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    if(ui->inputLine1->text() == "")
+    {
+        ui->outputTextEdit->setText("请在输入框1中输入选中的第一条线路的新名字。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    ui->outputTextEdit->setText("站点" + chosenLines->p2Line->name + "已改为" + ui->inputLine1->text());
+    chosenLines->p2Line->name = ui->inputLine1->text();
+    P2LineListEmpty(chosenLines);
+    ShowChosenLines();
+    //ui->outputTextEdit->setText();
+    ui->inputLine1->clear();
+    ui->inputLine2->clear();
+}
+
+void MainWindow::on_editTrackWeight_clicked()
+{
+    if(!chosenTracks)
+    {
+        ui->outputTextEdit->setText("未选中任何边。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    if(ui->inputLine1->text() == "")
+    {
+        ui->outputTextEdit->setText("请在输入框1中输入选中的第一条边的新权值。");
+        ui->inputLine1->clear();
+        ui->inputLine2->clear();
+        return;
+    }
+    bool ok;
+    int w = ui->inputLine1->text().toInt(&ok, 10);
+    ui->outputTextEdit->setText(chosenTracks->p2Track->s1->name + "--" + QString::number(chosenTracks->p2Track->weight, 10) + "--" + chosenTracks->p2Track->s2->name + "的权值已改为" +  QString::number(w, 10));
+    chosenTracks->p2Track->weight = w;
+    P2TrackListEmpty(chosenTracks);
+    ShowChosenTracks();
+    //ui->outputTextEdit->setText();
+    ui->inputLine1->clear();
+    ui->inputLine2->clear();
 }

@@ -235,7 +235,7 @@ state P2TrackListAppend(P2TrackList &P2TrackList, Track* p2Track);
 state P2TrackListEmpty(P2TrackList &P2TrackList);
 state P2TrackListDestroy(P2TrackList &P2TrackList);
 
-state SubwaySystemDestroy(SubwaySystem subwaySystem);
+state SubwaySystemDestroy(SubwaySystem &subwaySystem);
 
 state InitMap(SubwaySystem &subwaySystem, Map &map);
 int FindPosInVertexTable(Station* station, Map map);

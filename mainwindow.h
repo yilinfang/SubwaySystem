@@ -102,10 +102,12 @@ private:
     //QList<Track*> chosenTracks;
     P2TrackList chosenTracks;
     P2LineList chosenLines;
-    void ShowStation(Station* station);
-    void ShowTrack(Track* track);
+    void ShowStation(Station* station, QPoint pos);
+    void ShowTrack(Track* track, QPoint pos);
     Station* IsStationAround(QPoint pos);
     Track* IsTrackAround(QPoint pos);
+    QString dirPos;
+    int isFirstStart;
     //QList<Point> SetPointColor(QList<Station> &stations, QColor color);
     void SetPointColor(StationList &stations, QColor color, PointList &list);
     //QList<DLine> SetLineColor(QList<Track> &tracks, QColor color);
@@ -138,6 +140,10 @@ private slots:
     void on_confirmAdmins_clicked();
     void on_showAllLineStation_clicked();
     void on_login_clicked();
+    void on_editStationName_clicked();
+    void on_editStationPos_clicked();
+    void on_editLineName_clicked();
+    void on_editTrackWeight_clicked();
 };
 
 state PointListInit(PointList &pointList);
