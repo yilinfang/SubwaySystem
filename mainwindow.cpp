@@ -646,6 +646,13 @@ void MainWindow::on_saveFile_clicked()
 void MainWindow:: on_loadFile_clicked()
 {
     isFirstStart = 0;
+    P2LineListEmpty(chosenLines);
+    P2TrackListEmpty(chosenTracks);
+    P2StationListEmpty(chosenStations);
+    PointListEmpty(points2Draw);
+    PointListEmpty(drawedPoints);
+    DLineListEmpty(lines2Draw);
+    DLineListEmpty(drawedTracks);
     SubwaySystemDestroy(subwaySystem);
     DestroyMap(map);
     qDebug() << "test";
