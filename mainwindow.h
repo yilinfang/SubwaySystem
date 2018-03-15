@@ -36,38 +36,6 @@ struct DLine
     DLine* next;
 };
 
-//struct PointList{
-//    int size;
-//    int length;
-//    Point* arr;
-//    PointList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
-//struct PointNode
-//{
-//    Point point;
-//    PointNode* next;
-//};
-
-//struct DLineList{
-//    int size;
-//    int length;
-//    DLine* arr;
-//    DLineList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
-
-//struct DLineNode
-//{
-//    DLine dLine;
-//    DLineNode* next;
-//};
 
 namespace Ui {
 class MainWindow;

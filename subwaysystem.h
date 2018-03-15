@@ -37,16 +37,6 @@ typedef P2TrackNode* P2TrackList;
 typedef LineNode* LineList;
 typedef P2LineNode* P2LineList;
 
-//struct P2LineList{
-//    int size;
-//    int length;
-//    Line** arr;
-//    P2LineList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
 
 
 struct P2StationNode
@@ -61,22 +51,7 @@ struct P2TrackNode
     Track* p2Track;
     P2TrackNode* next;
 };
-//struct P2TrackList{
-//    int size;
-//    int length;
-//    Track** arr;
-//    P2TrackList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
 
-//struct LineNode
-//{
-//    Line line;
-//    LineNode* next;
-//};
 
 struct P2LineNode
 {
@@ -95,29 +70,6 @@ struct Station
     Station* next;
 };
 
-//struct StationList
-//{
-//    int size;
-//    int length;
-//    Station* arr;
-//    StationList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
-
-//struct P2StationList
-//{
-//    int size;
-//    int length;
-//    Station** arr;
-//    P2StationList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
 
 struct Line{
     QString name;
@@ -128,16 +80,6 @@ struct Line{
     Line* next;
 };
 
-//struct LineList{
-//    int size;
-//    int length;
-//    Line* arr;
-//    LineList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
 
 
 
@@ -151,16 +93,6 @@ struct Track{
     Track* next;
 };
 
-//struct TrackList{
-//    int size;
-//    int length;
-//    Track* arr;
-//    TrackList()
-//    {
-//        size = length = 0;
-//        arr = NULL;
-//    }
-//};
 
 
 struct SubwaySystem
