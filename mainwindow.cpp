@@ -21,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->groupBoxMap->hide();
     ui->groupBoxAdmins->hide();
     ui->groupBoxAdminTools->hide();
-    dirPos = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
+//    dirPos = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/";
+    dirPos = qApp->applicationDirPath() + "/";
     isFirstStart = 1;
     LoadAdmins();
     //ui->horizontalLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -359,7 +360,8 @@ void MainWindow::LoadAdmins()
 
 void MainWindow::SaveAdmins()
 {
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    //QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QString str = dirPos + "admins.dat";
     QFile file(str);
     if(file.open(QIODevice::WriteOnly))
     {
@@ -470,7 +472,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
         // 设置字体：微软雅黑、点大小50、斜体
         QFont font;
         font.setFamily("Microsoft YaHei");
-        font.setPointSize(50);
+        font.setPointSize(25);
         font.setItalic(true);
         painter.setFont(font);
 
@@ -853,7 +855,8 @@ void MainWindow::on_getMinestTimePath_clicked()
 void MainWindow::on_editMap_clicked()
 {
     ui->groupBoxMap->show();
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
+    //QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data.dat";
+    QString str = dirPos + "data.dat";
     QFile file(str);
     if (file.open(QIODevice::ReadOnly))
     {
@@ -866,7 +869,8 @@ void MainWindow::on_editMap_clicked()
 
 void MainWindow::on_confirmMap_clicked()
 {
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data1.dat";
+    //QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/data1.dat";
+    QString str = dirPos + "data.dat";
     QFile file(str);
     if (file.open(QIODevice::WriteOnly))
     {
@@ -885,7 +889,8 @@ void MainWindow::on_cancelMap_clicked()
 void MainWindow::on_editAdmins_clicked()
 {
     ui->groupBoxAdmins->show();
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    //QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QString str = dirPos + "admins.dat";
     QFile file(str);
     if (file.open(QIODevice::ReadOnly))
     {
@@ -903,7 +908,8 @@ void MainWindow::on_cancelAdmins_clicked()
 
 void MainWindow::on_confirmAdmins_clicked()
 {
-    QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    //QString str = "/Users/leo/Desktop/build-SubwaySystem-Desktop_Qt_5_9_4_clang_64bit-Debug/admins.dat";
+    QString str = dirPos + "admins.dat";
     QFile file(str);
     if (file.open(QIODevice::WriteOnly))
     {

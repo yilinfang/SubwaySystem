@@ -88,9 +88,9 @@ private:
     QString fileName;
     SubwaySystem subwaySystem;
     Map map;
-    QList<Point> points2draw;
+    //QList<Point> points2draw;
     PointList points2Draw;
-    QList<DLine> lines2draw;
+    //QList<DLine> lines2draw;
     DLineList lines2Draw;
     //QList<Point> drawedPoints;
     PointList drawedPoints;
