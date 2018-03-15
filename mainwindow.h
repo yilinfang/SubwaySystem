@@ -56,18 +56,11 @@ private:
     QString fileName;
     SubwaySystem subwaySystem;
     Map map;
-    //QList<Point> points2draw;
     PointList points2Draw;
-    //QList<DLine> lines2draw;
     DLineList lines2Draw;
-    //QList<Point> drawedPoints;
     PointList drawedPoints;
-    //QList<DLine> drawedTracks;
-    //PointList drawedTracks;
     DLineList drawedTracks;
-    //QList<Station*> chosenStations;
     P2StationList chosenStations;
-    //QList<Track*> chosenTracks;
     P2TrackList chosenTracks;
     P2LineList chosenLines;
     void ShowStation(Station* station, QPoint pos);
@@ -76,9 +69,7 @@ private:
     Track* IsTrackAround(QPoint pos);
     QString dirPos;
     int isFirstStart;
-    //QList<Point> SetPointColor(QList<Station> &stations, QColor color);
     void SetPointColor(StationList &stations, QColor color, PointList &list);
-    //QList<DLine> SetLineColor(QList<Track> &tracks, QColor color);
     void SetLineColor(TrackList &tracks, QColor color, DLineList &list);
     // QWidget interface
     void ShowChosenStation();

@@ -3,6 +3,7 @@
 
 #include "QVector"
 #include "QList"
+/*以上两个库为使用QPoint类型的必须库，程序中并未用到List以及Vector，所有底层数据结构均由C语言实现*/
 #include "QString"
 #include "QFile"
 #include "QTextStream"
@@ -63,9 +64,7 @@ struct Station
 {
     QString name;
     QPoint pos;
-    //QList<Line*> p2transferLines;
     P2LineList transferLines;
-    //QList<Track*> p2Tracks;
     P2TrackList trackList;
     Station* next;
 };
@@ -73,9 +72,7 @@ struct Station
 
 struct Line{
     QString name;
-    //QList<Station*> p2inLineStations;
     P2StationList inLineStations;
-    //QList<Track*> p2inLineTracks;
     P2TrackList inLineTrack;
     Line* next;
 };
@@ -85,10 +82,8 @@ struct Line{
 
 
 struct Track{
-    //long i,j;
     Station *s1, *s2;
     int weight;
-    //QList<Line*> p2inTrakLines;
     P2LineList LineList;
     Track* next;
 };
@@ -100,11 +95,8 @@ struct SubwaySystem
     int lineNum;
     int stationNum;
     int edgeNum;
-    //QList<Line> lineTable;
     LineList lineList;
-    //QList<Station> stationTable;
     StationList stationList;
-    //QList<Track> tracks;
     TrackList trackList;
 };
 
@@ -118,8 +110,6 @@ struct Map
     int** dist;
     int** path;
     Station** vertexTable;
-    //QVector<Station*> vertexTable;
-    //QList<Edge> edges;
 };
 
 state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &outputBufa);

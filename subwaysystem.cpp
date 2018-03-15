@@ -15,9 +15,6 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
     tempLine.inLineTrack = NULL;
     tempLine.next = NULL;
     Line* p2line = NULL;
-//    LineListInit(subwaySystem.lineList);
-//    StationListInit(subwaySystem.stationList);
-//    TrackListInit(subwaySystem.trackList);
     while(!stream.atEnd())
     {
         line = stream.readLine();
@@ -28,16 +25,11 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
         }
         if(line.startsWith("@", Qt::CaseSensitive)) //读取到线路信息
         {
-            //subwaySystem.lineTable.append(tempLine);
-//            qDebug() << subwaySystem.lineList.length << subwaySystem.lineList.size;
             subwaySystem.lineNum++;
             LineListAppend(subwaySystem.lineList, tempLine);
             p2line= LineListLast(subwaySystem.lineList);
             p2line->name = line;
             qDebug() << p2line->name;
-//            qDebug() << 1;
-//            p2line = &subwaySystem.lineList.arr[subwaySystem.lineList.length - 1];
-//            p2line->name = line;
         }
         else    //读取到站点以及路径信息
         {
@@ -117,7 +109,6 @@ state InitSubwaySystem(QString fileName, SubwaySystem &subwaySystem, QString &ou
 Station *FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwaySystem)
 {
     Station* ptr = FindStationByName(stationName, subwaySystem);
-    //qDebug() << ptr;
     if(!ptr) //该站点第一次出现
     {
         qDebug() << 20;
@@ -126,17 +117,13 @@ Station *FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwa
         temp.trackList = NULL;
         temp.transferLines = NULL;
         temp.name = stationName;
-        //temp.p2transferLines.append(p2line);
-        //P2LineListInit(temp.transferLines);
         P2LineListAppend(temp.transferLines, p2line);
-        //subwaySystem.stationTable.append(temp);
         StationListAppend(subwaySystem.stationList, temp);
         ptr = StationListLast(subwaySystem.stationList);
         P2StationListAppend(p2line->inLineStations, ptr);
     }
     else //该站点已经出现过
     {
-        //QList<Line*>::iterator iter;
         int signal = 0;
         P2LineNode* p = ptr->transferLines;
         while(p)
@@ -150,9 +137,7 @@ Station *FindOrNewStation(QString stationName, Line *p2line, SubwaySystem &subwa
         }
         if(!signal) //该站点出现在一条新线路中
         {
-            //ptr->p2transferLines.append(p2line);
             P2LineListAppend(ptr->transferLines, p2line);
-            //p2line->p2inLineStations.append(ptr);
             P2StationListAppend(p2line->inLineStations, ptr);
         }
     }
@@ -904,16 +889,16 @@ void ShowMap(Map map)
         }
         qDebug() << str;
     }
-//    for(int i = 0; i < map.vertexNum; i++)
-//    {
-//        QString str;
-//        for(int j = 0; j < map.vertexNum; j++)
-//        {
-//            str += QString::number(map.matrix_transfer[i][j], 10).toUpper();
-//            str += " ";
-//        }
-//        qDebug() << str;
-//    }
+    for(int i = 0; i < map.vertexNum; i++)
+    {
+        QString str;
+        for(int j = 0; j < map.vertexNum; j++)
+        {
+            str += QString::number(map.matrix_transfer[i][j], 10).toUpper();
+            str += " ";
+        }
+        qDebug() << str;
+    }
     return;
 }
 

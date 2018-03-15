@@ -274,7 +274,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
         signal = 1;
         DLineListEmpty(drawedTracks);
         DLineListAppendList(drawedTracks, lines2Draw);
-        //DLineListEmpty(lines2Draw);
         DLineNode* p = lines2Draw;
         while(p)
         {
@@ -283,7 +282,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
             painter.drawLine(p->track->s1->pos, p->track->s2->pos);
             p = p->next;
         }
-        //DLineListEmpty(lines2Draw);
     }
     if(points2Draw)
     {
@@ -298,7 +296,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
             painter.drawPoint(p->station->pos);
             p = p->next;
         }
-        //PointListEmpty(points2Draw);
     }
     if(!signal)
     {
